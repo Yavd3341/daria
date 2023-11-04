@@ -1,0 +1,121 @@
+:root {
+  --header-size: 3rem;
+  --navbar-size: 15rem;
+  --content-spacing: 1rem;
+  overflow: hidden;
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  padding: var(--content-spacing);
+  gap: var(--content-spacing);
+
+  box-sizing: border-box;
+
+  margin-left: var(--navbar-size);
+  margin-top: 3rem;
+
+  max-height: calc(100dvh - 3rem);
+  overflow: auto;
+
+  scrollbar-color: var(--col-accent) var(--col-bg);
+}
+
+.card[type=placeholder] {
+  text-align: center;
+  width: 256px;
+}
+
+.card img {
+  max-width: 75%;
+  margin-bottom: 5dvh;
+  display: inline-block;
+}
+
+form {
+  text-align: left;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  height: var(--header-size);
+  width: 100%;
+  padding: 0.5rem;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  color: var(--col-fg-inversed);
+  background-color: var(--col-accent);
+  box-shadow: 0 0.1rem 5px var(--col-shadow);
+  z-index: 1;
+}
+
+header a:hover {
+  background-color: var(--col-accent-dark);
+}
+
+header a {
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 4px;
+  transition: background-color 0.2s ease;
+}
+
+header img, a {
+  height: 100%;
+  margin-bottom: 0;
+}
+
+header .right-break {
+  margin-left: auto;
+}
+
+header #title {
+  font-size: larger;
+  font-weight: bold;
+}
+
+menu {
+  position: fixed;
+  top: var(--header-size);
+  height: 100%;
+  width: var(--navbar-size);
+  display: inline-block;
+
+  margin: 0;
+  padding: 0;
+
+  background-color: var(--col-accent-light);
+}
+
+menu a,
+menu span {
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+  display: inline-block;
+  width: 100%;
+
+  text-decoration: none;
+  color: var(--col-accent-dark);
+  
+  transition: background-color 0.2s ease;
+}
+
+menu a {
+  font-weight: bold;
+  padding-left: 2rem;
+}
+
+menu span {
+  padding-top: 1rem;
+}
+
+menu a:hover,
+menu a:active {
+  background-color: var(--col-accent-overlay);
+}

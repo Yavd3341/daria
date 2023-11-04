@@ -1,0 +1,26 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  text-align: center;
+  width: 256px;
+}
+
+img {
+  max-width: 75%;
+  margin-bottom: 5dvmin;
+  display: inline-block;
+}
+
+form {
+  text-align: left;
+}
+
+span {
+  font-size: smaller;
+  display: inline-block;
+  margin-top: 2rem;
+}

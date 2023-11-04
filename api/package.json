@@ -1,0 +1,15 @@
+{
+  "name": "daria",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Illia Yavdoshchuk",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@koa/router": "^12.0.1",
+    "koa": "^2.14.2"
+  }
+}
