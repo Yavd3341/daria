@@ -49,8 +49,17 @@ function resolveDependencies() {
 
   function process(item) {
     if (item && item.dependencies == 0) {
-      loadOrder.push(item.id);
-      delete unresolvedPlugins[item.id];
+
+      // In case plugin is already in load order, but has multiple coverages
+      if (unresolvedPlugins[item.id]) {
+        const plugin = coverage[item.id];
+        loadOrder.push(plugin.id);
+        delete unresolvedPlugins[plugin.id];
+        if (plugin.coverage)
+          for (const id of plugin.coverage)
+            delete unresolvedPlugins[id];
+      }
+
       for (const id of item.dependats) {
         if (id in unresolvedPlugins) {
           unresolvedPlugins[id].dependencies--;
@@ -63,18 +72,17 @@ function resolveDependencies() {
     }
   }
 
-  for (const id in plugins)
+  for (const id in coverage)
     unresolvedPlugins[id] = {
       id: id,
       dependats: [],
-      dependencies: plugins[id].dependencies.length
+      dependencies: coverage[id].dependencies.length
     };
 
-
-  for (const id in plugins) {
-    if (plugins[id].dependencies.length > 0) {
-      for (const dep of plugins[id].dependencies) {
-        if (dep in plugins)
+  for (const id in coverage) {
+    if (coverage[id].dependencies.length > 0) {
+      for (const dep of coverage[id].dependencies) {
+        if (dep in coverage)
           unresolvedPlugins[dep].dependats.push(id);
         else
           console.warn(`Missing dependency ${dep} for plugin ${id}`);
@@ -137,7 +145,15 @@ function discoverPlugins(appRoot) {
         }
 
         plugins[meta.id] = meta;
-        coverage[meta.coverage || meta.id] = meta;
+
+        coverage[meta.id] = meta;
+        if (meta.coverage) {
+          if (!Array.isArray(meta.coverage))
+            meta.coverage = [meta.coverage];
+          for (const id of meta.coverage)
+            coverage[id] = meta;
+        }
+
         console.log(`Plugin ${meta.id} is discovered in folder ${candidate.name}`);
       }
       else {
