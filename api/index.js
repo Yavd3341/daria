@@ -15,7 +15,7 @@ pluginManager.init({
   appRoot: join(__dirname, "..")
 });
 
-if (!pluginManager.getPluginByCoverageId("login-mgr")){
+if (!pluginManager.getPlugin("login-mgr")){
   router
     .post("/auth",          ctx => ctx.status = 200)
     .post("/auth/logout",   ctx => ctx.status = 200)
@@ -27,3 +27,5 @@ app
   .use(router.allowedMethods());
 
 app.listen(3100);
+
+pluginManager.getPlugin("notifier")?.sendNotification("Daria started");
