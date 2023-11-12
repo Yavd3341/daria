@@ -151,8 +151,12 @@ function discoverPlugins(appRoot) {
 
 module.exports = {
   init(ctx) {
+    console.log("Discovering plugins...");
     discoverPlugins(ctx.appRoot);
+    console.log("Resolving load order...");
     const loadOrder = resolveDependencies();
+    console.log("Load order is " + loadOrder.join(", "))
+    console.log("Loading plugins...");
     for (const id of loadOrder) {
       if (id in plugins) {
         if (plugins[id].entry) {
@@ -160,9 +164,10 @@ module.exports = {
             plugins[id].lib = require(plugins[id].entry);
           } 
           catch {}
-          
+
           if (plugins[id].lib) {
-            if ("init" in plugins[id].lib) {
+            if ("init" in plugins[id].lib
+            && typeof(plugins[id].lib.init) == "function") {
               let pluginCtx = {
                 app: ctx.app,
                 koa: ctx.koa,
@@ -187,6 +192,7 @@ module.exports = {
       else
         console.error(`Failed to load unregistered plugin ${id}`);
     }
+    console.log("Plugins loaded");
   },
 
   getPluginList() {
@@ -203,5 +209,10 @@ module.exports = {
 
   getPluginByCoverageId(id) {
     return coverage[id];
+  },
+
+  // Shortcut directly to module object
+  getPlugin(id) {
+    return this.getPluginByCoverageId(id)?.lib;
   }
 }
