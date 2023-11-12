@@ -131,8 +131,10 @@ function discoverPlugins(appRoot) {
         if (entryFile && entryFile.isFile()) {
           meta.entry = entryPath;
         }
-        else
+        else {
+          delete meta.entry;
           console.error(`Plugin ${meta.id} has no entry file`);
+        }
 
         plugins[meta.id] = meta;
         coverage[meta.coverage || meta.id] = meta;
@@ -154,7 +156,11 @@ module.exports = {
     for (const id of loadOrder) {
       if (id in plugins) {
         if (plugins[id].entry) {
-          plugins[id].lib = require(plugins[id].entry);
+          try {
+            plugins[id].lib = require(plugins[id].entry);
+          } 
+          catch {}
+          
           if (plugins[id].lib) {
             if ("init" in plugins[id].lib) {
               let pluginCtx = {
