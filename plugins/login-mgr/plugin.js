@@ -58,7 +58,6 @@ function loadStorage(pluginManager) {
   const defaultStorage = {
     username: "admin",
     password: "admin",
-    plain: true,
     cookies: []
   }
 
