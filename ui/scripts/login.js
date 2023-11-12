@@ -2,6 +2,11 @@
 // Login handler
 //
 
+getAjax("/api/auth/", {}, xhr => {
+  if (xhr.readyState == 4 && xhr.status == 200)
+    location.href = "/";
+});
+
 document.addEventListener("DOMContentLoaded", _ => {
   let loginForm = document.getElementsByTagName("form")[0];
   let loginInputs = loginForm.getElementsByTagName("input");

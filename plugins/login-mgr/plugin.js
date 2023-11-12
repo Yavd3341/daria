@@ -13,11 +13,11 @@ function makeEndpoints(storage) {
     if (ctx.json.user === storage.username) {
       if (checkPassowrd(ctx.json.pass, storage)) {
         ctx.status = 200;
-        dropCookie(ctx.cookies.get("daria"));
+        dropCookie(ctx.cookies.get("daria"), storage);
 
         const cookie = getNewCookie();
         ctx.cookies.set("daria", cookie);
-        
+
         storage.cookies.push(cookie);
         storage.save();
       }
@@ -37,7 +37,7 @@ function makeEndpoints(storage) {
 
   router.post("/logout", ctx => {
     ctx.status = 200;
-    dropCookie(ctx.cookies.get("daria"));
+    dropCookie(ctx.cookies.get("daria"), storage);
     ctx.cookies.set("daria", undefined);
   });
 
@@ -86,7 +86,7 @@ function getNewCookie() {
   return cookie;
 }
 
-async function dropCookie(cookie) {
+function dropCookie(cookie, storage) {
   if (storage.cookies.includes(cookie))
     storage.cookies.splice(storage.cookies.indexOf(cookie));
 }
