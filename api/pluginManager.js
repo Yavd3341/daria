@@ -97,11 +97,11 @@ function resolveDependencies() {
   return loadOrder;
 }
 
-function discoverPlugins() {
+function discoverPlugins(appRoot) {
   const fs = require("fs");
   const { join } = require("path");
 
-  const pluginsPath = join(__dirname, "..", "plugins");
+  const pluginsPath = join(appRoot, "plugins");
 
   for (const candidate of fs.readdirSync(pluginsPath, { withFileTypes: true })) {
     if (candidate.isDirectory()) {
@@ -123,7 +123,9 @@ function discoverPlugins() {
           continue;
         }
 
-        const entryPath = join(root, "api", meta.entry || "index.js");
+        const entryPath = meta.entry 
+          ? join(root, meta.entry) 
+          : join(root, "api", "index.js");
         const entryFile = fs.statSync(entryPath, { throwIfNoEntry: false });
 
         if (entryFile && entryFile.isFile()) {
@@ -147,7 +149,7 @@ function discoverPlugins() {
 
 module.exports = {
   init(ctx) {
-    discoverPlugins();
+    discoverPlugins(ctx.appRoot);
     const loadOrder = resolveDependencies();
     for (const id of loadOrder) {
       if (id in plugins) {
@@ -158,7 +160,8 @@ module.exports = {
               let pluginCtx = {
                 app: ctx.app,
                 koa: ctx.koa,
-                pluginManager: this
+                pluginManager: this,
+                appRoot: ctx.appRoot
               };
 
               plugins[id].lib.init(pluginCtx);

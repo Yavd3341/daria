@@ -6,11 +6,13 @@ const router = new Router();
 
 app.use(require("./koaJson.js"));
 
+const { join } = require("path");
 const pluginManager = require("./pluginManager.js");
 pluginManager.init({
   app: this,
   koa: app,
-  router: router
+  router: router,
+  appRoot: join(__dirname, "..")
 });
 
 if (!pluginManager.getPluginByCoverageId("login-mgr")){
