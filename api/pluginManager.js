@@ -136,9 +136,8 @@ function discoverPlugins(appRoot) {
           : join(root, "api", "index.js");
         const entryFile = fs.statSync(entryPath, { throwIfNoEntry: false });
 
-        if (entryFile && entryFile.isFile()) {
+        if (entryFile && (entryFile.isFile() || entryFile.isDirectory() && fs.existsSync(join(entryPath, "package.json"))))
           meta.entry = entryPath;
-        }
         else {
           delete meta.entry;
           console.error(`Plugin ${meta.id} has no entry file`);
