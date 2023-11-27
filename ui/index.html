@@ -20,7 +20,7 @@
     <a id="logout"><img src="/resources/lock.svg" alt="Logo"></a>
   </header>
 
-  <menu>
+  <menu id="sidebar">
     <div>
       <span>Daria</span>
       <a href="#">Dashboard</a>
@@ -103,6 +103,14 @@
     </div>
   </div>
 
+  <script>
+    buildSidebar({
+      hint: "daria:dashboard",
+      actions: Object.keys(daria.actions || {}),
+      url: location.pathname,
+      querry: location.search
+    });
+  </script>
 </body>
 
 </html>

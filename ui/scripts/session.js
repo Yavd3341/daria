@@ -2,13 +2,17 @@
 // Session handler
 //
 
+function logout() {
+  postAjax("/api/auth/logout", {}, _ => 
+    location.href = "/login.html");
+}
+
 getAjax("/api/auth/", {}, xhr => {
   if (xhr.readyState == 4 && xhr.status != 200)
     location.href = "/login.html";
 });
 
+daria.actions["daria:logout"] = logout;
 document.addEventListener("DOMContentLoaded", _ =>
-  logout.onclick = _ => 
-    postAjax("/api/auth/logout", {}, _ => 
-      location.href = "/login.html"));
-
+  logout.onclick = _ => logout()
+);
