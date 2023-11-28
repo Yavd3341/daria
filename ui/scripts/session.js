@@ -7,7 +7,7 @@ function logout() {
     location.href = "/login.html");
 }
 
-getAjax("/api/auth/", {}, xhr => {
+getAjax("/api/auth/", xhr => {
   if (xhr.readyState == 4 && xhr.status != 200)
     location.href = "/login.html";
 });
