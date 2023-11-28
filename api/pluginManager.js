@@ -52,11 +52,11 @@ function resolveDependencies() {
 
       // In case plugin is already in load order, but has multiple coverages
       if (unresolvedPlugins[item.id]) {
-        const plugin = coverage[item.id];
+        const plugin = plugins[item.id];
         loadOrder.push(plugin.id);
         delete unresolvedPlugins[plugin.id];
-        if (plugin.coverage)
-          for (const id of plugin.coverage)
+        if (plugin.plugins)
+          for (const id of plugin.plugins)
             delete unresolvedPlugins[id];
       }
 
@@ -72,18 +72,18 @@ function resolveDependencies() {
     }
   }
 
-  for (const id in coverage)
+  for (const id in plugins)
     unresolvedPlugins[id] = {
       id: id,
       dependats: [],
-      dependencies: coverage[id].dependencies.length
+      dependencies: plugins[id].dependencies.length
     };
 
-  for (const id in coverage) {
-    if (coverage[id].dependencies.length > 0) {
-      for (const dep of coverage[id].dependencies) {
+  for (const id in plugins) {
+    if (plugins[id].dependencies.length > 0) {
+      for (const dep of plugins[id].dependencies) {
         if (dep in coverage)
-          unresolvedPlugins[dep].dependats.push(id);
+          unresolvedPlugins[coverage[dep].id].dependats.push(id);
         else
           console.warn(`Missing dependency ${dep} for plugin ${id}`);
       }
@@ -99,7 +99,7 @@ function resolveDependencies() {
 
   unresolvedPlugins = Object.keys(unresolvedPlugins)
   if (unresolvedPlugins.length > 0) {
-    console.warn(`Failed to resolve load order for plugins ${unresolvedPlugins.join(", ")}`)
+    console.warn(`Failed to resolve load order for plugins: ${unresolvedPlugins.join(", ")}`)
   }
 
   return loadOrder;
