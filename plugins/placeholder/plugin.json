@@ -2,5 +2,7 @@
   "id": "placeholder",
   "name": "Placeholder",
   "author": "Yavd",
-  "version": "internal-dev"
+  "version": "internal-dev",
+  "entry": "plugin.js",
+  "dependencies": [ "ui" ]
 }

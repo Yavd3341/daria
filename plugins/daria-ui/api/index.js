@@ -5,18 +5,17 @@
 const Router = require("@koa/router");
 
 const sidebarMgr = require("./sidebar");
+const cardsMgr = require("./cards");
 
 function loadStorage(pluginManager) {
   // To be changed later
 
   const defaultStorage = {
-    username: "admin",
-    password: "admin",
-    cookies: []
-  }
+    dashboard: []
+  };
 
   const storageManager = pluginManager.getPlugin("storage-mgr");
-  let storage = storageManager.getStorage("auth", defaultStorage);
+  let storage = storageManager.getStorage("ui", defaultStorage);
   storage.load();
   storage.save();
 
@@ -25,13 +24,20 @@ function loadStorage(pluginManager) {
 
 module.exports = {
   init(ctx) {
+    let storage = loadStorage(ctx.pluginManager);
+
     ctx.router = new Router();
     ctx.router.prefix("/ui")
 
     sidebarMgr.init(ctx.router);
+    cardsMgr.init(ctx.router, storage);
   },
 
   addSidebarBuilder(builder) {
-    sidebarMgr.addSidebarBuilder(builder);
+    sidebarMgr.addBuilder(builder);
+  },
+
+  addCardsBuilder(builder) {
+    cardsMgr.addBuilder(builder);
   }
 }

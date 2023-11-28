@@ -1,7 +1,7 @@
 :root {
   --header-size: 3rem;
   --navbar-size: 15rem;
-  --content-spacing: 1rem;
+  --content-spacing: 0.75rem;
   overflow: hidden;
 }
 
@@ -22,9 +22,9 @@
   scrollbar-color: var(--col-accent) var(--col-bg);
 }
 
-.card[type=placeholder] {
-  text-align: center;
-  width: 256px;
+.card.full {
+  text-align: left;
+  width: 100% !important;
 }
 
 .card img {

@@ -2,11 +2,11 @@
 // Daria UI: Sidebar
 //
 
-var sidebarBuilders = [];
+var builders = [];
 
-function buildSidebar(ctx) {
+function build(ctx) {
   let sidebar = [];
-  for (const builder of sidebarBuilders) {
+  for (const builder of builders) {
     let part = builder(ctx);
     if (part)
       sidebar.push(part);
@@ -43,13 +43,13 @@ function makeDariaSidebarPart(ctx) {
 
 module.exports = {
   init(router) {
-    this.addSidebarBuilder(makeDariaSidebarPart);
+    this.addBuilder(makeDariaSidebarPart);
     router.post("/sidebar", ctx => {
-      ctx.body = buildSidebar(ctx.json);
+      ctx.body = build(ctx.json);
     });
   },
 
-  addSidebarBuilder(builder) {
-    sidebarBuilders.push(builder);
+  addBuilder(builder) {
+    builders.push(builder);
   }
 }

@@ -7,6 +7,7 @@
   <title>Daria</title>
   <script src="/scripts/functions.js"></script>
   <script src="/scripts/session.js"></script>
+  <script src="/scripts/ui.js"></script>
   <link rel="stylesheet" href="/styles/styles.css">
   <link rel="stylesheet" href="/styles/main.css">
 </head>
@@ -21,95 +22,16 @@
   </header>
 
   <menu id="sidebar">
-    <div>
-      <span>Daria</span>
-      <a href="#">Dashboard</a>
-      <a href="#">Settings</a>
-      <a href="#">Log out</a>
-    </div>
-    <div>
-      <span>DTEK</span>
-      <a href="#">Overview</a>
-      <a href="#">Records log</a>
-      <a href="#">External site</a>
-    </div>
-    <div>
-      <span>Norma PLUS</span>
-      <a href="#">Overview</a>
-      <a href="#">Records log</a>
-      <a href="#">External site</a>
-    </div>
+    <span><i>Empty</i></span>
   </menu>
 
-  <div class="content">
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
-    
-    <div class="card" type="placeholder">
-      <h1>Placeholder</h1>
-      <img src="/resources/logo.svg" alt="Logo">
-    </div>
+  <div id="main" class="content">
   </div>
 
   <script>
-    buildSidebar({
-      hint: "daria:dashboard",
-      actions: Object.keys(daria.actions || {}),
-      url: location.pathname,
-      querry: location.search
-    });
+    let hint = { hint:"daria:dashboard" };
+    buildSidebar(hint);
+    buildCards(hint, true);
   </script>
 </body>
 
