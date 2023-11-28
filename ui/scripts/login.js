@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", _ => {
         } else {
           loginBtn.classList.add("error");
           if (xhr.status == 401) {
-            const response = JSON.parse(xhr.response);
+            const response = xhr.response;
             switch (response.result) {
               case "err_user":
                 loginBtn.innerText = "Invalid username";

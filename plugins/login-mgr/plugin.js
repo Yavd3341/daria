@@ -14,7 +14,7 @@ function makeEndpoints() {
 
   router.post("/", ctx => {
     if (ctx.json.user === storage.username) {
-      if (checkPassowrd(ctx.json.pass)) {
+      if (ctx.json.pass === storage.password) {
         ctx.status = 200;
         dropCookie(ctx.cookies.get("daria"));
 
@@ -78,13 +78,6 @@ function loadStorage(pluginManager) {
     cookie.since = new Date(cookie.since)
 
   return storage;
-}
-
-function checkPassowrd(pass) {
-  if (storage.plain)
-    return pass === storage.password;
-  else
-    false;
 }
 
 function getNewCookie() {
