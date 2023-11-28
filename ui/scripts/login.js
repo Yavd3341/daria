@@ -2,7 +2,7 @@
 // Login handler
 //
 
-getAjax("/api/auth/", {}, xhr => {
+getAjax("/api/auth/", xhr => {
   if (xhr.readyState == 4 && xhr.status == 200)
     location.href = "/";
 });

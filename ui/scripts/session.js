@@ -14,5 +14,5 @@ getAjax("/api/auth/", xhr => {
 
 daria.actions["daria:logout"] = logout;
 document.addEventListener("DOMContentLoaded", _ =>
-  logout.onclick = _ => logout()
+  document.getElementById("logout").onclick = _ => logout()
 );

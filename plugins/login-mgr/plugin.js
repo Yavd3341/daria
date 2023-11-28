@@ -53,8 +53,8 @@ function makeEndpoints() {
 
 function makeSessionGuard() {
   return (ctx, next) => {
-    if (!storage.cookies.some(item => item.cookie == ctx.cookies.get("daria") 
-    && getTimeDiffMins(new Date(), item.since) > storage.expireAfter)
+    if (storage.cookies.some(item => 
+      item.cookie == ctx.cookies.get("daria") && getTimeDiffMins(new Date(), item.since) <= storage.expireAfter)
     || (ctx.method == "POST" && ctx.URL.pathname == "/auth"))
       return next();
     else
@@ -68,7 +68,7 @@ function loadStorage(pluginManager) {
     password: "admin",
     expireAfter: 24 * 60, // Full day
     cookies: []
-  }
+  };
 
   const storageManager = pluginManager.getPlugin("storage-mgr");
   let storage = storageManager.getStorage("auth", defaultStorage);
@@ -103,6 +103,9 @@ function dropCookie(cookie) {
 }
 
 function vacuum() {
+  if (storage.cookies.length == 0)
+    return;
+
   let now = new Date();
   storage.cookies = storage.cookies.filter(cookie => 
     getTimeDiffMins(now, cookie.since) <= storage.expireAfter);
