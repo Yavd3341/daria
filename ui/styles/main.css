@@ -14,9 +14,9 @@
   box-sizing: border-box;
 
   margin-left: var(--navbar-size);
-  margin-top: 3rem;
+  margin-top: var(--header-size);
 
-  max-height: calc(100dvh - 3rem);
+  max-height: calc(100dvh - var(--header-size));
   overflow: auto;
 
   scrollbar-color: var(--col-accent) var(--col-bg);
@@ -83,9 +83,13 @@ header #title {
 menu {
   position: fixed;
   top: var(--header-size);
-  height: 100%;
+  height: calc(100% - var(--header-size));
   width: var(--navbar-size);
   display: inline-block;
+  overflow-y: auto;
+
+  scrollbar-color: var(--col-accent) var(--col-accent-light);
+  scrollbar-width: thin;
 
   margin: 0;
   padding: 0;
