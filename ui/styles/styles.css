@@ -5,6 +5,8 @@
   --col-fg-inversed: white;
   --col-shadow: #20202040;
 
+  --col-input_underline: var(--col-shadow);
+
   --col-dark-overlay: #20202020;
 
   --col-accent: #6298BC;
@@ -51,7 +53,7 @@ input[type=password] {
   width: 100%;
   padding: 0.75em;
   margin-top: 0.5em;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
 
   border: none;
   border-top-right-radius: 4px;
@@ -88,10 +90,8 @@ button:hover {
 }
 
 .error {
-  background-color: var(--col-red);
-}
-
-.error:active,
-.error:hover {
-  background-color: var(--col-red-dark);
+  --col-shadow: var(--col-red);
+  --col-accent: var(--col-red);
+  --col-accent-dark: var(--col-red-dark);
+  --col-accent-light: var(--col-red-light);
 }

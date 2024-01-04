@@ -19,6 +19,10 @@ form {
   text-align: left;
 }
 
+input {
+  margin-bottom: 2em;
+}
+
 span {
   font-size: smaller;
   display: inline-block;
