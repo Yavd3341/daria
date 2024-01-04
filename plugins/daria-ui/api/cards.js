@@ -3,6 +3,7 @@
 //
 
 var builders = [];
+var providers = {};
 
 function build(ctx) {
   let scripts = [];
@@ -39,20 +40,21 @@ function build(ctx) {
 
 module.exports = {
   init(router, storage) {
+    this.addDataProvider("/", () => storage.dashboard);
+
     router.post("/cards", ctx => {
-      if (ctx.query["res"])
-        ctx.body = {
-          data: storage.dashboard,
-          ...build(ctx.json)
-        };
-      else
-        ctx.body = {
-          data: storage.dashboard
-        };
+      let data = ctx.json.url in providers ? providers[ctx.json.url]() : [];
+      ctx.body = ctx.query["res"]
+        ? { data, ...build(ctx.json) }
+        : { data };
     });
   },
 
   addBuilder(builder) {
     builders.push(builder);
+  },
+
+  addDataProvider(url, provider) {
+    providers[url] = provider;
   }
 }

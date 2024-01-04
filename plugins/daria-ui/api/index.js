@@ -39,5 +39,9 @@ module.exports = {
 
   addCardsBuilder(builder) {
     cardsMgr.addBuilder(builder);
+  },
+
+  addDataProvider(url, provider) {
+    cardsMgr.addDataProvider(url, provider);
   }
 }
