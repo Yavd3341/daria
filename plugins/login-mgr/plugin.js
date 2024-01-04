@@ -5,8 +5,10 @@
 const Router = require("@koa/router");
 
 var storage = undefined;
-var vacuumId = undefined;
 var isDirty = false;
+
+var vacuumId = undefined;
+var saveId = undefined;
 
 function makeEndpoints() {
   const router = new Router();
@@ -117,7 +119,7 @@ function vacuum() {
 
   console.log(`Vacuumed sessions, ${Object.keys(storage.cookies).length} left`)
   storage.save();
-  
+
   isDirty = false;
 }
 
@@ -134,11 +136,67 @@ module.exports = {
     vacuum();
     vacuumId = setInterval(vacuum, storage.expireAfter * 60 * 1000);
 
-    setInterval(() => {
+    saveId = setInterval(() => {
       if (isDirty) {
         storage.save();
         isDirty = false;
       }
     }, storage.saveInterval * 1000);
+
+    const uiManager = ctx.pluginManager.getPlugin("ui");
+    const settingsUrl = "/settings/login";
+
+    uiManager.addCardsBuilder(ctx => {
+      if (ctx.url == settingsUrl)
+        return {
+          scripts: ["/plugins/login-mgr/loader.js"],
+          styles: ["/plugins/login-mgr/styles.css"],
+          templates: { 
+            "settings": "login-mgr/html/settings.html",
+            "sessions": "login-mgr/html/sessions.html" 
+          }
+        };
+    });
+
+    uiManager.addSidebarBuilder(ctx => {
+      if (ctx.hint == "daria:settings") {
+        let sidebar = {
+          name: "Login manager",
+          items: [
+            {
+              name: "Drop all sessions",
+              action: "login:drop-all-sessions"
+            }
+          ]
+        };
+
+        if (ctx.url != settingsUrl) {
+          sidebar.items.unshift({
+            name: "Settings",
+            url: settingsUrl
+          });
+        }
+        
+        return sidebar;
+      }
+    });
+
+    uiManager.addDataProvider(settingsUrl, ctx => {
+      let cookies = structuredClone(storage.cookies);
+      cookies[ctx.cookies.get("daria")].self = true;
+
+      return [
+        {
+          type: "settings",
+          username: storage.username,
+          expireAfter: storage.expireAfter,
+          saveInterval: storage.saveInterval 
+        },
+        {
+          type: "sessions", 
+          cookies
+        }
+      ];
+    });
   }
 }

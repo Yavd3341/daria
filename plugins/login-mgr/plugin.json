@@ -3,6 +3,6 @@
   "name": "Login manager",
   "author": "Yavd",
   "version": "internal-dev",
-  "dependencies": [ "storage-mgr" ],
+  "dependencies": [ "storage-mgr", "ui" ],
   "entry": "plugin.js"
 }

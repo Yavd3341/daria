@@ -1,0 +1,58 @@
+.card {
+  text-align: center;
+}
+
+#settings {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+}
+
+#table {
+  flex-grow: 1;
+}
+
+#self {
+  margin-left: 1em;
+  font-style: italic;
+}
+
+.cookie {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  border-bottom: 2px solid var(--col-accent);
+}
+
+tr:not(:last-child) {
+  border-bottom: 1px solid var(--col-shadow);
+}
+
+td:not(:last-child),
+th:not(:last-child) {
+  border-right: 1px solid var(--col-shadow);
+}
+
+th,
+td {
+  padding: calc(var(--content-spacing) / 2);
+}
+
+section {
+  margin-bottom: 2em;
+}
+
+section.line > * {
+  margin-bottom: 0;
+}
+
+.unit {
+  display: inline;
+}
