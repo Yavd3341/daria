@@ -45,6 +45,7 @@ module.exports = {
   init(router) {
     this.addBuilder(makeDariaSidebarPart);
     router.post("/sidebar", ctx => {
+      ctx.json.cookies = ctx.cookies;
       ctx.body = build(ctx.json);
     });
   },

@@ -43,7 +43,8 @@ module.exports = {
     this.addDataProvider("/", () => storage.dashboard);
 
     router.post("/cards", ctx => {
-      let data = ctx.json.url in providers ? providers[ctx.json.url]() : [];
+      ctx.json.cookies = ctx.cookies;
+      let data = ctx.json.url in providers ? providers[ctx.json.url](ctx.json) : [];
       ctx.body = ctx.query["res"]
         ? { data, ...build(ctx.json) }
         : { data };
