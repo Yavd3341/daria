@@ -3,5 +3,6 @@
   "name": "Plugin manager debugger",
   "author": "Yavd",
   "version": "internal-dev",
-  "entry": "plugin.js"
+  "entry": "plugin.js",
+  "dependencies": [ "ui" ]
 }
