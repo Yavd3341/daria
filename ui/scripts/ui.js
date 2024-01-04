@@ -2,6 +2,11 @@
 // UI functions
 //
 
+function cleanElement(element) {
+  while (element.hasChildNodes())
+    element.removeChild(element.lastChild);
+}
+
 function buildSidebar(ctx) {
   let fullCtx = Object.assign({}, ctx, {
     actions: Object.keys(daria.actions || {}),
@@ -30,7 +35,7 @@ function buildSidebar(ctx) {
           if (itemRecipe.name) {
             let item = document.createElement("a");
             item.innerText = itemRecipe.name;
-            
+
             if (itemRecipe.action && itemRecipe.action in daria.actions) {
               item.onclick = daria.actions[itemRecipe.action];
             }
@@ -43,7 +48,7 @@ function buildSidebar(ctx) {
 
       newSidebar.appendChild(section);
     }
-    
+
     while (sidebar.hasChildNodes())
       sidebar.removeChild(sidebar.lastChild);
     sidebar.appendChild(newSidebar);
@@ -64,8 +69,8 @@ function buildCards(ctx, withResourses) {
     if (!recipe)
       return;
 
-      let scriptPromises = []
-      let templatePromises = []
+    let scriptPromises = []
+    let templatePromises = []
 
     if (recipe.head) {
       let headFragment = document.createElement("template");
@@ -85,8 +90,7 @@ function buildCards(ctx, withResourses) {
     }
 
     if (recipe.templates) {
-      let templates = document.createDocumentFragment();
-      let ctxs = []
+      let templatesBuffer = document.createDocumentFragment();
 
       for (const template in recipe.templates) {
         let tpl = document.createElement("template");
@@ -94,8 +98,13 @@ function buildCards(ctx, withResourses) {
 
         let promise = new Promise((resolve, reject) => {
           getAjax(recipe.templates[template], xhr => {
+            if (xhr.status != 200) {
+              reject(xhr.status);
+              return;
+            }
+
             tpl.innerHTML = xhr.response;
-            templates.appendChild(tpl);
+            templatesBuffer.appendChild(tpl);
             resolve();
           })
         });
@@ -104,19 +113,24 @@ function buildCards(ctx, withResourses) {
       }
 
       await Promise.allSettled(templatePromises);
-      while (main.hasChildNodes())
-        main.removeChild(main.lastChild);
-      main.appendChild(templates);
-
-      await Promise.allSettled(scriptPromises);
-      let cards = document.createDocumentFragment();
-      for (const ctx of recipe.data) {
-        let element = document.getElementById(ctx.type).content.cloneNode(true);
-        if (ctx.type in daria.builders)
-          daria.builders[ctx.type](element, ctx);
-        cards.appendChild(element);
-      }
-      main.appendChild(cards);
+      cleanElement(templates);
+      templates.appendChild(templatesBuffer);
     }
+
+    await Promise.allSettled(scriptPromises);
+    let cards = document.createDocumentFragment();
+    for (const ctx of recipe.data) {
+      let element = document.getElementById(ctx.type)?.content.cloneNode(true);
+
+      if (!element)
+        continue;
+
+      if (ctx.type in daria.builders)
+        daria.builders[ctx.type](element, ctx);
+      cards.appendChild(element);
+    }
+
+    cleanElement(content);
+    content.appendChild(cards);
   });
 }

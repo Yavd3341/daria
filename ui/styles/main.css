@@ -5,7 +5,12 @@
   overflow: hidden;
 }
 
-.content {
+/* Templates container */
+#templates {
+  display: none;
+}
+
+#content {
   display: flex;
   flex-wrap: wrap;
   padding: var(--content-spacing);
