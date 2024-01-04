@@ -31,7 +31,15 @@
   <div id="content"></div>
 
   <script>
-    let hint = { hint:"daria:dashboard" };
+    let hint = undefined;
+
+    if (location.pathname == "/")
+      hint = "daria:dashboard";
+    else if (location.pathname.startsWith("/settings"))
+      hint = "daria:settings";
+
+    hint = { hint }; // Convert hint to object
+
     buildSidebar(hint);
     buildCards(hint, true);
   </script>
