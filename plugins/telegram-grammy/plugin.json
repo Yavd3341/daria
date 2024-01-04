@@ -1,7 +1,7 @@
 {
   "id": "telegram-grammy",
   "coverage": "notifier",
-  "name": "Login manager",
+  "name": "Telegram notifier",
   "author": "Yavd",
   "version": "internal-dev",
   "dependencies": [ "storage-mgr" ],
