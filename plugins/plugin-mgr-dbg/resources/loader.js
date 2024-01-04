@@ -1,7 +1,7 @@
 function fillField(card, id, value) {
   let cell = card.getElementById(id);
 
-  if (value != undefined)
+  if (value != undefined && value.toString().trim().length > 0)
     cell.innerText = value;
   else {
     let line = cell.parentElement;
@@ -14,7 +14,7 @@ daria.builders["plugin"] = (card, ctx) => {
 
   let idElement = card.getElementById("id")
   idElement.innerText = ctx.id;
-  idElement.title = ctx.entry;
+  idElement.title = ctx.entry || "No entry";
 
   fillField(card, "version", ctx.version);
   fillField(card, "author", ctx.author);

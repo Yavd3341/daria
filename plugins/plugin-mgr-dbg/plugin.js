@@ -65,7 +65,7 @@ module.exports = {
           author: plugin.author,
           coverage: plugin.coverage,
           dependencies: plugin.dependencies,
-          entry: plugin.entry.substring(rootLength)
+          entry: plugin.entry?.substring(rootLength)
         });
 
       return data;
