@@ -33,7 +33,7 @@ module.exports = {
             "plugin": "plugin-mgr-dbg/html/plugin.html",
             "header": "plugin-mgr-dbg/html/header.html"
           }
-        }
+        };
     });
 
     uiManager.addSidebarBuilder(ctx => {
@@ -41,7 +41,7 @@ module.exports = {
         return {
           name: "Plugin manager",
           items: [{
-            name: "Statistics",
+            name: "Installed plugins",
             url: "/settings/plugins"
           }]
         };

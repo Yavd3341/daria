@@ -2,9 +2,17 @@
 // UI functions
 //
 
-function cleanElement(element) {
-  while (element.hasChildNodes())
-    element.removeChild(element.lastChild);
+function cleanElementAndAppend(parent, child) {
+  while (parent.hasChildNodes())
+    parent.removeChild(parent.lastChild);
+  parent.appendChild(child);
+}
+
+function actionInvoker(action) {
+  return (event) => {
+    if (action in daria.actions)
+      daria.actions[action](event);
+  }
 }
 
 function buildSidebar(ctx) {
@@ -36,9 +44,8 @@ function buildSidebar(ctx) {
             let item = document.createElement("a");
             item.innerText = itemRecipe.name;
 
-            if (itemRecipe.action && itemRecipe.action in daria.actions) {
-              item.onclick = daria.actions[itemRecipe.action];
-            }
+            if (itemRecipe.action)
+              item.onclick = actionInvoker(itemRecipe.action);
 
             item.href = itemRecipe.url || "#";
             section.appendChild(item);
@@ -49,9 +56,7 @@ function buildSidebar(ctx) {
       newSidebar.appendChild(section);
     }
 
-    while (sidebar.hasChildNodes())
-      sidebar.removeChild(sidebar.lastChild);
-    sidebar.appendChild(newSidebar);
+    cleanElementAndAppend(sidebar, newSidebar);
   });
 }
 
@@ -113,8 +118,7 @@ function buildCards(ctx, withResourses) {
       }
 
       await Promise.allSettled(templatePromises);
-      cleanElement(templates);
-      templates.appendChild(templatesBuffer);
+      cleanElementAndAppend(templates, templatesBuffer);
     }
 
     await Promise.allSettled(scriptPromises);
@@ -130,7 +134,6 @@ function buildCards(ctx, withResourses) {
       cards.appendChild(element);
     }
 
-    cleanElement(content);
-    content.appendChild(cards);
+    cleanElementAndAppend(content, cards);
   });
 }
