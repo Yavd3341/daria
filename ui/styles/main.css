@@ -38,8 +38,21 @@
   display: inline-block;
 }
 
+hr {
+  border: 1px solid var(--col-accent);
+}
+
 form {
   text-align: left;
+}
+
+form > section {
+  display: flex;
+  gap: var(--content-spacing);
+}
+
+form > section > * {
+  flex-grow: 1;
 }
 
 header {
@@ -69,6 +82,7 @@ header a {
   border-radius: 4px;
   padding: 4px;
   transition: background-color 0.2s ease;
+  cursor: pointer;
 }
 
 header img, a {

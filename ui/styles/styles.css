@@ -43,10 +43,6 @@ h1 {
   margin-bottom: 5dvh;
 }
 
-a {
-  cursor: pointer;
-}
-
 input[type=text],
 input[type=password] {
   display: block;
