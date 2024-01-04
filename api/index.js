@@ -15,11 +15,11 @@ pluginManager.init({
   appRoot: join(__dirname, "..")
 });
 
-if (!pluginManager.getPlugin("login-mgr")){
+if (!pluginManager.getPlugin("login-mgr")) {
   router
-    .post("/auth",          ctx => ctx.status = 200)
-    .post("/auth/logout",   ctx => ctx.status = 200)
-    .get ("/auth/validate", ctx => ctx.status = 200);
+    .get ("/auth",        ctx => ctx.status = 200)
+    .post("/auth",        ctx => ctx.status = 200)
+    .post("/auth/logout", ctx => ctx.status = 200);
 }
 
 app
