@@ -6,6 +6,7 @@ const Router = require("@koa/router");
 
 var storage = undefined;
 var vacuumId = undefined;
+var isDirty = false;
 
 function makeEndpoints() {
   const router = new Router();
@@ -16,17 +17,15 @@ function makeEndpoints() {
     if (ctx.json.user === storage.username) {
       if (ctx.json.pass === storage.password) {
         ctx.status = 200;
-        dropCookie(ctx.cookies.get("daria"));
 
-        const cookie = getNewCookie();
+        const cookie = ctx.cookies.get("daria") || getNewCookie();
         ctx.cookies.set("daria", cookie);
 
-        storage.cookies.push({
-          cookie: cookie,
+        storage.cookies[cookie] = {
           since: new Date()
-        });
+        };
 
-        storage.save();
+        isDirty = true;
       }
       else {
         ctx.status = 401;
@@ -53,9 +52,18 @@ function makeEndpoints() {
 
 function makeSessionGuard() {
   return (ctx, next) => {
-    if (storage.cookies.some(item => 
-      item.cookie == ctx.cookies.get("daria") && getTimeDiffMins(new Date(), item.since) <= storage.expireAfter)
-    || (ctx.method == "POST" && ctx.URL.pathname == "/auth"))
+    let cookie = ctx.cookies.get("daria");
+    let isValidCookie = cookie in storage.cookies
+      && getTimeDiffMins(new Date(), storage.cookies[cookie].since) <= storage.expireAfter;
+
+    let isAuthRequest = ctx.method == "POST" && ctx.URL.pathname == "/auth";
+
+    if (isValidCookie) {
+      if (storage.refreshCookies)
+        storage.cookies[cookie].since = new Date();
+      return next();
+    }
+    else if (isAuthRequest)
       return next();
     else
       ctx.status = 401;
@@ -67,15 +75,17 @@ function loadStorage(pluginManager) {
     username: "admin",
     password: "admin",
     expireAfter: 24 * 60, // Full day
-    cookies: []
+    saveInterval: 5 * 60, // Every 5 minutes
+    refreshCookies: true,
+    cookies: {}
   };
 
   const storageManager = pluginManager.getPlugin("storage-mgr");
   let storage = storageManager.getStorage("auth", defaultStorage);
   storage.load();
 
-  for (let cookie of storage.cookies)
-    cookie.since = new Date(cookie.since)
+  for (let cookie in storage.cookies)
+    storage.cookies[cookie].since = new Date(storage.cookies[cookie].since)
 
   return storage;
 }
@@ -90,20 +100,25 @@ function getNewCookie() {
 }
 
 function dropCookie(cookie) {
-  let ci = storage.cookies.findIndex(item => item.cookie == cookie);
-  if (ci != -1)
-    storage.cookies.splice(ci);
+  if (cookie in storage.cookies) {
+    delete storage.cookies[cookie];
+    isDirty = true;
+  }
 }
 
 function vacuum() {
-  if (storage.cookies.length == 0)
+  if (Object.keys(storage.cookies).length == 0)
     return;
 
   let now = new Date();
-  storage.cookies = storage.cookies.filter(cookie => 
-    getTimeDiffMins(now, cookie.since) <= storage.expireAfter);
-  console.log(`Vacuumed sessions, ${storage.cookies.length} left`)
+  for (const cookie in storage.cookies)
+    if (getTimeDiffMins(now, storage.cookies[cookie].since) > storage.expireAfter)
+      delete storage.cookies[cookie];
+
+  console.log(`Vacuumed sessions, ${Object.keys(storage.cookies).length} left`)
   storage.save();
+  
+  isDirty = false;
 }
 
 function getTimeDiffMins(a, b) {
@@ -118,5 +133,12 @@ module.exports = {
 
     vacuum();
     vacuumId = setInterval(vacuum, storage.expireAfter * 60 * 1000);
+
+    setInterval(() => {
+      if (isDirty) {
+        storage.save();
+        isDirty = false;
+      }
+    }, storage.saveInterval * 1000);
   }
 }
