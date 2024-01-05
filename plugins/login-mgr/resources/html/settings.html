@@ -1,29 +1,37 @@
 <div id="settings" class="card">
   <h1>Login manager</h1>
-  <form>
-    <b>Username</b>
-    <section>
-      <input id="user" type="text" placeholder="Enter Username" name="user" required>
-    </section>
-
-    <b>New password</b>
-    <section class="line">
-      <input id="newPass" type="password" placeholder="New Password" name="newPass">
-      <input id="newPassAgain" type="password" placeholder="Confirm New Password" name="newPassAgain">
-    </section>
-
-    <b>Session lifetime</b>
-    <section class="line">
-      <input id="expireAfter" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Expire after" name="expireAfter" required>
-      <span class="unit">hour(s)</span>
-    </section>
-
-    <b title="Session changes, although take effect immediately, are not stored to disk one by one, but rather in batches once in a while.">Save interval</b>
-    <section class="line">
-      <input id="saveInterval" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Save changes every" name="saveInterval" required>
-      <span class="unit">minute(s)</span>
-    </section>
+  
+  <form id="form">
+    <div>
+      <b>Username</b>
+      <section>
+        <input id="user" type="text" placeholder="Enter Username" name="user" required>
+      </section>
+  
+      <b>New password</b>
+      <section class="line">
+        <input id="newPass" type="password" placeholder="New Password" name="newPass">
+        <input id="newPassAgain" type="password" placeholder="Confirm New Password" name="newPassAgain">
+      </section>
+    </div>
     
-    <button id="submit" type="submit">Save</button>
+    <div>
+      <b>Session lifetime</b>
+      <section class="line">
+        <input id="expireAfter" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Expire after" name="expireAfter" required>
+        <span class="unit">hour(s)</span>
+      </section>
+  
+      <b title="Session changes, although take effect immediately, are not stored to disk one by one, but rather in batches once in a while.">Save interval</b>
+      <section class="line">
+        <input id="saveInterval" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Save changes every" name="saveInterval" required>
+        <span class="unit">minute(s)</span>
+      </section>
+    </div>
   </form>
+
+  <div class="layout">
+    <button id="submit" form="form" type="submit">Apply</button>
+    <button id="save">Save state to disk</button>
+  </div>
 </div>

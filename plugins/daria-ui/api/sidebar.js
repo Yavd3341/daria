@@ -8,7 +8,7 @@ function build(ctx) {
   let sidebar = [];
   for (const builder of builders) {
     let part = builder(ctx);
-    if (part)
+    if (part?.items?.length > 0)
       sidebar.push(part);
   }
   return sidebar;

@@ -1,6 +1,6 @@
 :root {
   --header-size: 3rem;
-  --navbar-size: 15rem;
+  --navbar-size: max(10rem, 25dvmin);
   --content-spacing: 0.75rem;
   overflow: hidden;
 }
@@ -21,7 +21,7 @@
   margin-left: var(--navbar-size);
   margin-top: var(--header-size);
 
-  max-height: calc(100dvh - var(--header-size));
+  height: calc(100dvh - var(--header-size));
   overflow: auto;
 
   scrollbar-color: var(--col-accent) var(--col-bg);
@@ -46,14 +46,18 @@ form {
   text-align: left;
 }
 
-form > section.line {
+form section.line {
   display: flex;
   align-items: baseline;
   gap: var(--content-spacing);
 }
 
-form > section.line > * {
+form section.line > * {
   flex-grow: 1;
+}
+
+button + button {
+  margin-top: var(--content-spacing);
 }
 
 header {

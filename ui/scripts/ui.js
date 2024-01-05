@@ -74,54 +74,60 @@ function buildCards(ctx, withResourses) {
     if (!recipe)
       return;
 
-    let scriptPromises = []
-    let templatePromises = []
-
-    if (recipe.head) {
-      let headFragment = document.createElement("template");
-      headFragment.innerHTML = recipe.head;
-      document.head.appendChild(headFragment.content);
-    }
-
-    if (recipe.scripts) {
-      let fragment = document.createDocumentFragment();
-      for (const script of recipe.scripts) {
-        let element = document.createElement("script");
-        element.setAttribute("src", script);
-        scriptPromises.push(new Promise((resolve, reject) => element.onload = resolve));
-        fragment.appendChild(element);
+    if (withResourses) {
+      let scriptPromises = []
+      let templatePromises = []
+  
+      if (recipe.head) {
+        let headFragment = document.createElement("template");
+        headFragment.innerHTML = recipe.head;
+        document.head.appendChild(headFragment.content);
       }
-      document.head.appendChild(fragment);
-    }
-
-    if (recipe.templates) {
-      let templatesBuffer = document.createDocumentFragment();
-
-      for (const template in recipe.templates) {
-        let tpl = document.createElement("template");
-        tpl.id = template;
-
-        let promise = new Promise((resolve, reject) => {
-          getAjax(recipe.templates[template], xhr => {
-            if (xhr.status != 200) {
-              reject(xhr.status);
-              return;
-            }
-
-            tpl.innerHTML = xhr.response;
-            templatesBuffer.appendChild(tpl);
-            resolve();
-          })
-        });
-
-        templatePromises.push(promise);
+  
+      if (recipe.scripts) {
+        let fragment = document.createDocumentFragment();
+        for (const script of recipe.scripts) {
+          let element = document.createElement("script");
+          element.setAttribute("src", script);
+          scriptPromises.push(new Promise((resolve, reject) => element.onload = resolve));
+          fragment.appendChild(element);
+        }
+        document.head.appendChild(fragment);
       }
 
-      await Promise.allSettled(templatePromises);
-      cleanElementAndAppend(templates, templatesBuffer);
+      let mainScriptsPromise = Promise.allSettled(scriptPromises)
+        .then(() => buildSidebar(hint));
+  
+      if (recipe.templates) {
+        let templatesBuffer = document.createDocumentFragment();
+  
+        for (const template in recipe.templates) {
+          let tpl = document.createElement("template");
+          tpl.id = template;
+  
+          let promise = new Promise((resolve, reject) => {
+            getAjax(recipe.templates[template], xhr => {
+              if (xhr.status != 200) {
+                reject(xhr.status);
+                return;
+              }
+  
+              tpl.innerHTML = xhr.response;
+              templatesBuffer.appendChild(tpl);
+              resolve();
+            })
+          });
+  
+          templatePromises.push(promise);
+        }
+  
+        await Promise.allSettled(templatePromises);
+        cleanElementAndAppend(templates, templatesBuffer);
+      }
+  
+      await mainScriptsPromise;
     }
-
-    await Promise.allSettled(scriptPromises);
+    
     let cards = document.createDocumentFragment();
     for (const ctx of recipe.data) {
       let element = document.getElementById(ctx.type)?.content.cloneNode(true);
@@ -136,4 +142,51 @@ function buildCards(ctx, withResourses) {
 
     cleanElementAndAppend(content, cards);
   });
+}
+
+function makeForm(exsistingForm) {
+  let form = exsistingForm || document.createElement("form");
+
+  function addTextElement(tag, parent, text) {
+    const elem = document.createElement("h1");
+    elem.innerText = text;
+    parent.appendChild(elem);
+
+    return builders;
+  }
+
+  function addTextInputElement(type, parent, id, placeholder, value) {
+    const elem = document.createElement("input");
+
+    elem.type = type;
+    elem.id = id;
+
+    if (placeholder)
+      elem.placeholder = placeholder;
+
+    if (value)
+      elem.innerText = value;
+
+    parent.appendChild(elem);
+
+    return builders;
+  }
+
+  let builders = {
+    addHeading: text => addTextElement("h1", form, text),
+    addText: text => addTextElement("p", form, text),
+
+    addTextInput: (id, placeholder, value) => addTextInputElement("text", form, id, placeholder, value),
+    addPasswordInput: (id, placeholder, value) => addTextInputElement("password", form, id, placeholder, value),
+    addNumberInput: (id, placeholder, value) => addTextInputElement("numeric", form, id, placeholder, value),
+
+    addElement: element => {
+      document.appendChild(element);
+      return builders;
+    },
+
+    build: () => form
+  };
+
+  return builders;
 }
