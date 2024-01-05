@@ -1,6 +1,7 @@
 :root {
   --header-size: 3rem;
-  --navbar-size: max(10rem, 25dvmin);
+  --sidebar-size: 12.5rem;
+  --sidebar-visibility: 1;
   --content-spacing: 0.75rem;
   overflow: hidden;
 }
@@ -18,8 +19,9 @@
 
   box-sizing: border-box;
 
-  margin-left: var(--navbar-size);
+  margin-left: var(--sidebar-size);
   margin-top: var(--header-size);
+  transition: margin-left ease 0.2s;
 
   height: calc(100dvh - var(--header-size));
   overflow: auto;
@@ -75,7 +77,7 @@ header {
   color: var(--col-fg-inversed);
   background-color: var(--col-accent);
   box-shadow: 0 0.1rem 5px var(--col-shadow);
-  z-index: 1;
+  z-index: 2;
 }
 
 header a:hover {
@@ -104,11 +106,14 @@ header #title {
   font-weight: bold;
 }
 
-menu {
+#sidebar {
   position: fixed;
   top: var(--header-size);
+  left: calc((var(--sidebar-visibility) - 1) * var(--sidebar-size));
+  transition: left ease 0.2s;
+
   height: calc(100% - var(--header-size));
-  width: var(--navbar-size);
+  width: var(--sidebar-size);
   display: inline-block;
   overflow-y: auto;
 
@@ -119,10 +124,13 @@ menu {
   padding: 0;
 
   background-color: var(--col-accent-light);
+  box-shadow: 0.1rem 0 5px var(--col-shadow);
+
+  z-index: 1;
 }
 
-menu a,
-menu span {
+#sidebar a,
+#sidebar span {
   padding: 0.5rem 1rem;
   box-sizing: border-box;
   display: inline-block;
@@ -134,16 +142,32 @@ menu span {
   transition: background-color 0.2s ease;
 }
 
-menu a {
+#sidebar a {
   font-weight: bold;
   padding-left: 2rem;
 }
 
-menu span {
+#sidebar span {
   padding-top: 1rem;
 }
 
-menu a:hover,
-menu a:active {
+#sidebar a:hover,
+#sidebar a:focus {
   background-color: var(--col-accent-overlay);
+}
+
+@media screen and (max-width: 600px) {
+  #content {
+    margin-left: 0;
+  }
+
+  #sidebar {
+    --sidebar-visibility: 0;
+    
+  }
+
+  #sidebar.visible,
+  #sidebar:focus-within {
+    --sidebar-visibility: 1;
+  }
 }

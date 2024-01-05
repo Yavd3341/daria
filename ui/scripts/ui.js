@@ -2,6 +2,12 @@
 // UI functions
 //
 
+document.addEventListener("DOMContentLoaded", () => {
+  let sidebar = document.getElementById("sidebar")
+  for (const element of document.getElementsByClassName("toggle-sidebar"))
+    element.onclick = () => sidebar.classList.toggle("visible");
+})
+
 function cleanElementAndAppend(parent, child) {
   while (parent.hasChildNodes())
     parent.removeChild(parent.lastChild);
