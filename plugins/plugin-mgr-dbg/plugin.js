@@ -27,11 +27,11 @@ module.exports = {
     uiManager.addCardsBuilder(ctx => {
       if (ctx.url == "/settings/plugins")
         return {
-          scripts: ["/plugins/plugin-mgr-dbg/loader.js"],
-          styles: ["/plugins/plugin-mgr-dbg/styles.css"],
+          scripts: ["/plugins/active-plugins/loader.js"],
+          styles: ["/plugins/active-plugins/styles.css"],
           templates: {
-            "plugin": "plugin-mgr-dbg/html/plugin.html",
-            "header": "plugin-mgr-dbg/html/header.html"
+            "plugin": "active-plugins/html/plugin.html",
+            "header": "active-plugins/html/header.html"
           }
         };
     });
@@ -41,7 +41,7 @@ module.exports = {
         return {
           name: "Plugin manager",
           items: [{
-            name: "Installed plugins",
+            name: "Active plugins",
             url: "/settings/plugins"
           }]
         };

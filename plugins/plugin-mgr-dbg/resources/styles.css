@@ -6,6 +6,15 @@
   margin: 0
 }
 
+#heading {
+  margin: 0;
+  padding: calc(var(--content-spacing) * 1.5);
+  padding-top: calc(var(--content-spacing) * 0.5);
+
+  width: 100%;
+  border-bottom: 2px solid var(--col-accent);
+}
+
 #id {
   display: block;
   margin: 0.25em 0 1.2em;
@@ -20,4 +29,10 @@ td {
 td:nth-child(2) {
   font-weight: bold;
   padding-left: 1em;
+}
+
+@media screen and (max-width: 600px) {
+  .card {
+    width: 100%;
+  }
 }
