@@ -95,7 +95,10 @@ function buildCards(ctx, withResourses) {
         for (const script of recipe.scripts) {
           let element = document.createElement("script");
           element.setAttribute("src", script);
-          scriptPromises.push(new Promise((resolve, reject) => element.onload = resolve));
+          scriptPromises.push(new Promise((resolve, reject) => {
+            element.onload = resolve;
+            element.onerror = reject;
+          }));
           fragment.appendChild(element);
         }
         document.head.appendChild(fragment);

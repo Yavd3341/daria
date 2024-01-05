@@ -149,7 +149,7 @@ header #title {
   padding-left: 2rem;
 }
 
-#sidebar span {
+#sidebar div {
   padding-top: 1rem;
 }
 
@@ -165,11 +165,14 @@ header #title {
 
   #sidebar {
     --sidebar-visibility: 0;
-    
   }
 
   #sidebar.visible,
   #sidebar:focus-within {
     --sidebar-visibility: 1;
   }
+}
+
+#sidebar:empty {
+  --sidebar-visibility: 0;
 }
