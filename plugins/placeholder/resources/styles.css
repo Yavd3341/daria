@@ -1,8 +1,0 @@
-.card[type=placeholder] {
-  text-align: center;
-  width: 256px;
-}
-
-.card[type=placeholder].full h1 {
-  margin: 0
-}
