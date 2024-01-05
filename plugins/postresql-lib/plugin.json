@@ -1,0 +1,7 @@
+{
+  "id": "postgresql-lib",
+  "name": "PostgreSQL library",
+  "author": "Yavd",
+  "version": "internal-dev",
+  "entry": "api"
+}
