@@ -1,6 +1,6 @@
 {
-  "id": "postgresql",
-  "name": "PostgreSQL library plugin",
+  "id": "needle",
+  "name": "Needle library plugin",
   "author": "Yavd",
   "version": "internal-dev",
   "entry": "api"

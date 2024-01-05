@@ -1,0 +1,10 @@
+{
+  "name": "postgresql-lib",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Illia Yavdoshchuk",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "needle": "^3.3.1"
+  }
+}
