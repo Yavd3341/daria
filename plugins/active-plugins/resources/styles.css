@@ -24,11 +24,17 @@
 td {
   padding: 0.25em 0;
   vertical-align: top;
+  border: none !important;
+}
+
+tr {
+  border: none !important;
 }
 
 td:nth-child(2) {
   font-weight: bold;
   padding-left: 1em;
+  width: 100%;
 }
 
 @media screen and (max-width: 600px) {

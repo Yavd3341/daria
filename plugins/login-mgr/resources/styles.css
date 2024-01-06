@@ -37,29 +37,6 @@
   --col-accent-light: var(--col-red-light);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  border-bottom: 2px solid var(--col-accent);
-}
-
-tr:not(:last-child) {
-  border-bottom: 1px solid var(--col-shadow);
-}
-
-td:not(:last-child),
-th:not(:last-child) {
-  border-right: 1px solid var(--col-shadow);
-}
-
-th,
-td {
-  padding: calc(var(--content-spacing) / 2);
-}
-
 section {
   margin-bottom: 2em;
 }
