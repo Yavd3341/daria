@@ -216,7 +216,7 @@ module.exports = {
     });
 
     uiManager.addSidebarBuilder(ctx => {
-      if (ctx.hint == "daria:settings") {
+      if (ctx.url.startsWith("/settings")) {
         let sidebar = {
           name: "Login manager",
           items: []

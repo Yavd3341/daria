@@ -37,7 +37,7 @@ module.exports = {
     });
 
     uiManager.addSidebarBuilder(ctx => {
-      if (ctx.hint == "daria:settings" && ctx.url != "/settings/plugins")
+      if (ctx.url.startsWith("/settings") && ctx.url != "/settings/plugins")
         return {
           name: "Plugin manager",
           items: [{

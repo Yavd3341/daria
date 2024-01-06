@@ -149,7 +149,8 @@ daria.builders["sessions"] = (fragment, ctx) => {
     cookies.appendChild(row);
   }
 
-  cleanElementAndAppend(table, cookies);
+  cleanElement(table);
+  table.appendChild(cookies);
 };
 
 daria.actions["login:end-all-sessions"] = () => 

@@ -21,13 +21,13 @@
     <a id="logout" title="Log out" tabindex="0"><img src="/resources/lock.svg" alt="Log out"></a>
   </header>
 
-  <menu id="sidebar"> </menu>
+  <menu id="sidebar"></menu>
 
   <!-- Templates container -->
   <div id="templates"></div>
   <template id="menu-container-tpl">
     <div class="menu-container">
-      <h1>Nothing here</h1>
+      <h1 id="heading">Daria</h1>
       <a href="/">Back to Dashboard</a>
       <menu id="main"></menu>
     </div>
@@ -36,16 +36,7 @@
   <div id="content"></div>
 
   <script>
-    let hint = undefined;
-
-    if (location.pathname == "/")
-      hint = "daria:dashboard";
-    else if (location.pathname.startsWith("/settings"))
-      hint = "daria:settings";
-
-    hint = { hint }; // Convert hint to object
-
-    buildCards(hint, true);
+    makeSPA();
   </script>
 </body>
 

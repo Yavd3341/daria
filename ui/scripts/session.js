@@ -13,6 +13,8 @@ getAjax("/api/auth/", xhr => {
 });
 
 daria.actions["daria:logout"] = logout;
+daria.persistentActions.push("daria:logout");
+
 document.addEventListener("DOMContentLoaded", _ =>
   document.getElementById("logout").onclick = _ => logout()
 );

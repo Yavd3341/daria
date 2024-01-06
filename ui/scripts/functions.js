@@ -22,5 +22,7 @@ function getAjax(url, callback) {
 
 var daria = {
   actions: {},
-  builders: {}
+  builders: {},
+
+  persistentActions: []
 };

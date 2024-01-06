@@ -236,6 +236,7 @@ td {
 
 #sidebar:empty {
   --sidebar-visibility: 0;
+  transition-delay: 25ms;
 }
 
 #sidebar:empty ~ #content {

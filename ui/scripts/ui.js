@@ -8,11 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
     element.onclick = () => sidebar.classList.toggle("visible");
 })
 
-function cleanElementAndAppend(parent, child) {
+function cleanElement(parent) {
   while (parent.hasChildNodes())
     parent.removeChild(parent.lastChild);
-  if (child)
-    parent.appendChild(child);
 }
 
 function actionInvoker(action) {
@@ -36,15 +34,15 @@ function isSidebarEmpty() {
   return false;
 }
 
-function buildSidebar(ctx) {
-  let fullCtx = Object.assign({}, ctx, {
+function buildSidebar() {
+  let ctx = {
     actions: Object.keys(daria.actions || {}),
     url: location.pathname,
     querry: location.search
-  });
+  };
 
   return new Promise((resolve, reject) => 
-    postAjax("/api/ui/sidebar", fullCtx || {}, recipe => {
+    postAjax("/api/ui/sidebar", ctx || {}, recipe => {
       recipe = recipe.response; // Unpack recipe
   
       if (!recipe) {
@@ -80,37 +78,45 @@ function buildSidebar(ctx) {
         newSidebar.appendChild(section);
       }
   
-      cleanElementAndAppend(sidebar, newSidebar);
+      cleanElement(sidebar, newSidebar);
+      sidebar.appendChild(newSidebar);
+
+      updateLinks(sidebar);
       resolve();
     })
   );
 }
 
-function buildCards(ctx, withResourses) {
-  let fullCtx = Object.assign({}, ctx, {
+function buildCards(withResourses) {
+  let ctx = {
     actions: Object.keys(daria.actions || {}),
     url: location.pathname,
     querry: location.search
-  });
+  };
 
   let sidebarPromise;
 
   // Request data with resources
-  postAjax(`/api/ui/cards${withResourses ? "?res=1" : ""}`, fullCtx, async recipe => {
+  postAjax(`/api/ui/cards${withResourses ? "?res=1" : ""}`, ctx, async recipe => {
     recipe = recipe.response; // Unpack recipe
 
     if (!recipe)
       return;
 
+    cleanElement(content);
+
     if (withResourses) {
-      let scriptPromises = []
-      let templatePromises = []
+      let scriptPromises = [];
+      let templatePromises = [];
+
+      for (const key in daria.actions)
+        if (!daria.persistentActions.includes(key))
+          delete daria.actions[key];
+      
+      daria.builders = {};
   
-      if (recipe.head) {
-        let headFragment = document.createElement("template");
-        headFragment.innerHTML = recipe.head;
-        document.head.appendChild(headFragment.content);
-      }
+      if (recipe.head)
+        document.head.innerHTML = daria.initialHead + recipe.head;
   
       if (recipe.scripts) {
         let fragment = document.createDocumentFragment();
@@ -127,7 +133,7 @@ function buildCards(ctx, withResourses) {
       }
 
       let mainScriptsPromise = Promise.allSettled(scriptPromises);
-      sidebarPromise = mainScriptsPromise.then(() => buildSidebar(hint));
+      sidebarPromise = mainScriptsPromise.then(() => buildSidebar());
   
       if (recipe.templates) {
         let templatesBuffer = document.createDocumentFragment();
@@ -153,7 +159,8 @@ function buildCards(ctx, withResourses) {
         }
   
         await Promise.allSettled(templatePromises);
-        cleanElementAndAppend(templates, templatesBuffer);
+        cleanElement(templates);
+        templates.appendChild(templatesBuffer)
       }
   
       await mainScriptsPromise;
@@ -171,7 +178,7 @@ function buildCards(ctx, withResourses) {
       cards.appendChild(element);
     }
 
-    cleanElementAndAppend(content, cards);
+    content.appendChild(cards);
 
     if (content.children.length == 0) {
       await sidebarPromise;
@@ -193,7 +200,6 @@ function buildCards(ctx, withResourses) {
           }
         }
 
-        console.log(links)
         if (links.length > 0) {
           for (const link of links) {
             block.removeChild(link);
@@ -203,59 +209,39 @@ function buildCards(ctx, withResourses) {
         }
       }
 
-      if (menu.children.length == 0)
+      if (menu.children.length == 0) {
         menu.parentNode.removeChild(menu);
+        container.getElementById("heading").innerText = "Nothing here";
+      }
 
       content.appendChild(container);
     }
+    else 
+      updateLinks(content);
 
-    cleanElementAndAppend(sidebar);
+    cleanElement(sidebar);
   });
 }
 
-function makeForm(exsistingForm) {
-  let form = exsistingForm || document.createElement("form");
-
-  function addTextElement(tag, parent, text) {
-    const elem = document.createElement("h1");
-    elem.innerText = text;
-    parent.appendChild(elem);
-
-    return builders;
+function updateLinks(parent) {
+  const links = parent.getElementsByTagName("a");
+  for (const link of links) {
+    let href = link.getAttribute("href");
+    if (link.host == location.host && href && !href.startsWith("#"))
+      link.addEventListener('click', function(event) {
+        event.preventDefault();
+        history.pushState(undefined, undefined, link.href);
+        buildCards(true);
+      }, false);
   }
+}
 
-  function addTextInputElement(type, parent, id, placeholder, value) {
-    const elem = document.createElement("input");
+function makeSPA() {
+  daria.initialHead = document.head.innerHTML;
+  daria.prevHead = "";
 
-    elem.type = type;
-    elem.id = id;
+  updateLinks(document.body);
+  window.addEventListener("popstate", () => buildCards(true));
 
-    if (placeholder)
-      elem.placeholder = placeholder;
-
-    if (value)
-      elem.innerText = value;
-
-    parent.appendChild(elem);
-
-    return builders;
-  }
-
-  let builders = {
-    addHeading: text => addTextElement("h1", form, text),
-    addText: text => addTextElement("p", form, text),
-
-    addTextInput: (id, placeholder, value) => addTextInputElement("text", form, id, placeholder, value),
-    addPasswordInput: (id, placeholder, value) => addTextInputElement("password", form, id, placeholder, value),
-    addNumberInput: (id, placeholder, value) => addTextInputElement("numeric", form, id, placeholder, value),
-
-    addElement: element => {
-      document.appendChild(element);
-      return builders;
-    },
-
-    build: () => form
-  };
-
-  return builders;
+  buildCards(true);
 }
