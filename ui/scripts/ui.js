@@ -115,8 +115,7 @@ function buildCards(withResourses) {
       
       daria.builders = {};
   
-      if (recipe.head)
-        document.head.innerHTML = daria.initialHead + recipe.head;
+      document.head.innerHTML = daria.initialHead + (recipe.head || "");
   
       if (recipe.scripts) {
         let fragment = document.createDocumentFragment();

@@ -250,7 +250,7 @@ td {
 
 .menu-container {
   text-align: center;
-  margin-bottom: 5dvh;
+  max-width: 95%;
 }
 
 .menu-container > h1 {
@@ -264,13 +264,17 @@ td {
   border-bottom: 1px solid var(--col-fg);
 }
 
+.menu-container:not(:has(menu)) {
+  margin-bottom: 5dvh;
+}
+
 .menu-container menu {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 
-  margin-top: 3em;
-  padding: var(--content-spacing);
+  margin: 3em 0 0;
+  padding: 0;
   gap: var(--content-spacing);
 }
 
