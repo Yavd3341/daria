@@ -11,7 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function cleanElementAndAppend(parent, child) {
   while (parent.hasChildNodes())
     parent.removeChild(parent.lastChild);
-  parent.appendChild(child);
+  if (child)
+    parent.appendChild(child);
 }
 
 function actionInvoker(action) {
@@ -21,6 +22,20 @@ function actionInvoker(action) {
   }
 }
 
+function isLinkToRoot(link) {
+  return link.pathname == "/" && link.host == location.host;
+}
+
+function isSidebarEmpty() {
+  if (sidebar.children.length == 0)
+    return true;
+
+  if (sidebar.children.length == 1 && isLinkToRoot(sidebar.firstChild.firstChild))
+    return true;
+
+  return false;
+}
+
 function buildSidebar(ctx) {
   let fullCtx = Object.assign({}, ctx, {
     actions: Object.keys(daria.actions || {}),
@@ -28,42 +43,47 @@ function buildSidebar(ctx) {
     querry: location.search
   });
 
-  postAjax("/api/ui/sidebar", fullCtx || {}, recipe => {
-    recipe = recipe.response; // Unpack recipe
-
-    if (!recipe)
-      return;
-
-    let newSidebar = document.createDocumentFragment();
-    for (const sectionRecipe of recipe) {
-      let section = document.createElement("div");
-
-      if (sectionRecipe.name) {
-        let sectionName = document.createElement("span");
-        sectionName.innerText = sectionRecipe.name;
-        section.appendChild(sectionName);
+  return new Promise((resolve, reject) => 
+    postAjax("/api/ui/sidebar", fullCtx || {}, recipe => {
+      recipe = recipe.response; // Unpack recipe
+  
+      if (!recipe) {
+        resolve();
+        return;
       }
-
-      if (sectionRecipe.items) {
-        for (const itemRecipe of sectionRecipe.items) {
-          if (itemRecipe.name) {
-            let item = document.createElement("a");
-            item.innerText = itemRecipe.name;
-
-            if (itemRecipe.action)
-              item.onclick = actionInvoker(itemRecipe.action);
-
-            item.href = itemRecipe.url || "#";
-            section.appendChild(item);
+  
+      let newSidebar = document.createDocumentFragment();
+      for (const sectionRecipe of recipe) {
+        let section = document.createElement("div");
+  
+        if (sectionRecipe.name) {
+          let sectionName = document.createElement("span");
+          sectionName.innerText = sectionRecipe.name;
+          section.appendChild(sectionName);
+        }
+  
+        if (sectionRecipe.items) {
+          for (const itemRecipe of sectionRecipe.items) {
+            if (itemRecipe.name) {
+              let item = document.createElement("a");
+              item.innerText = itemRecipe.name;
+  
+              if (itemRecipe.action)
+                item.onclick = actionInvoker(itemRecipe.action);
+  
+              item.href = itemRecipe.url || "#";
+              section.appendChild(item);
+            }
           }
         }
+  
+        newSidebar.appendChild(section);
       }
-
-      newSidebar.appendChild(section);
-    }
-
-    cleanElementAndAppend(sidebar, newSidebar);
-  });
+  
+      cleanElementAndAppend(sidebar, newSidebar);
+      resolve();
+    })
+  );
 }
 
 function buildCards(ctx, withResourses) {
@@ -72,6 +92,8 @@ function buildCards(ctx, withResourses) {
     url: location.pathname,
     querry: location.search
   });
+
+  let sidebarPromise;
 
   // Request data with resources
   postAjax(`/api/ui/cards${withResourses ? "?res=1" : ""}`, fullCtx, async recipe => {
@@ -104,8 +126,8 @@ function buildCards(ctx, withResourses) {
         document.head.appendChild(fragment);
       }
 
-      let mainScriptsPromise = Promise.allSettled(scriptPromises)
-        .then(() => buildSidebar(hint));
+      let mainScriptsPromise = Promise.allSettled(scriptPromises);
+      sidebarPromise = mainScriptsPromise.then(() => buildSidebar(hint));
   
       if (recipe.templates) {
         let templatesBuffer = document.createDocumentFragment();
@@ -150,6 +172,44 @@ function buildCards(ctx, withResourses) {
     }
 
     cleanElementAndAppend(content, cards);
+
+    if (content.children.length == 0) {
+      await sidebarPromise;
+
+      let container = document.getElementById("menu-container-tpl").content.cloneNode(true);
+      let menu = container.getElementById("main");
+      for (const block of sidebar.children) {
+        let newBlock = document.createElement("div");
+        newBlock.classList.add("card");
+        let links = [];
+
+        for (const child of block.children) {
+          if (child.tagName == "A" && !isLinkToRoot(child))
+            links.push(child);
+          else {
+            let name = document.createElement("h1");
+            name.innerText = child.innerText;
+            newBlock.appendChild(name);
+          }
+        }
+
+        console.log(links)
+        if (links.length > 0) {
+          for (const link of links) {
+            block.removeChild(link);
+            newBlock.appendChild(link);
+          }
+          menu.appendChild(newBlock);
+        }
+      }
+
+      if (menu.children.length == 0)
+        menu.parentNode.removeChild(menu);
+
+      content.appendChild(container);
+    }
+
+    cleanElementAndAppend(sidebar);
   });
 }
 

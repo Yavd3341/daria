@@ -46,6 +46,18 @@ hr {
   border: 1px solid var(--col-accent);
 }
 
+a {
+  color: var(--col-accent);
+  text-decoration: none;
+  transition: color ease 0.2s;
+}
+
+a:hover,
+a:focus-visible {
+  color: var(--col-accent-dark);
+  text-decoration: underline;
+}
+
 form {
   text-align: left;
 }
@@ -175,4 +187,53 @@ header #title {
 
 #sidebar:empty {
   --sidebar-visibility: 0;
+}
+
+#sidebar:empty ~ #content {
+  margin-left: 0;
+}
+
+#content:has(.menu-container:only-child) {
+  justify-content: center;
+  align-content: center;
+}
+
+.menu-container {
+  text-align: center;
+  margin-bottom: 5dvh;
+}
+
+.menu-container > h1 {
+  font-size: min(10dvw, 4rem);
+  opacity: 0.3;
+
+  padding-bottom: 0.4em;
+  margin: 0 auto 0.4em;
+  width: fit-content;
+
+  border-bottom: 1px solid var(--col-fg);
+}
+
+.menu-container menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  margin-top: 3em;
+  padding: var(--content-spacing);
+  gap: var(--content-spacing);
+}
+
+.menu-container .card {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--content-spacing) / 2.0);
+}
+
+.menu-container .card h1 {
+  padding-bottom: var(--content-spacing);
+  margin-bottom: calc(var(--content-spacing) / 2.0);
+
+  border-bottom: 1px solid var(--col-accent);
 }
