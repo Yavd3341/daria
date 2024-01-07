@@ -7,10 +7,15 @@ function logout() {
     location.href = "/login.html");
 }
 
-getAjax("/api/auth/", xhr => {
-  if (xhr.readyState == 4 && xhr.status != 200)
-    location.href = "/login.html";
-});
+function checkSession() {
+  return new Promise(resolve =>
+    getAjax("/api/auth/", xhr => {
+      if (xhr.readyState == 4 && xhr.status != 200)
+        location.href = "/login.html";
+      resolve();
+    })
+  );
+}
 
 daria.actions["daria:logout"] = logout;
 daria.persistentActions.push("daria:logout");

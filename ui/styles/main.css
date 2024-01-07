@@ -6,7 +6,20 @@
 
   --col-grid: var(--col-input-underline);
 
-  overflow: hidden;
+  padding-left: var(--sidebar-size);
+  padding-top: var(--header-size);
+  transition: padding-left ease 0.2s;
+
+  box-sizing: border-box;
+
+  height: 100dvh;
+  /* overflow: auto; */
+
+  scrollbar-color: var(--col-accent) var(--col-bg);
+}
+
+body {
+  height: 100%;
 }
 
 /* Templates container */
@@ -24,14 +37,7 @@
 
   box-sizing: border-box;
 
-  margin-left: var(--sidebar-size);
-  margin-top: var(--header-size);
-  transition: margin-left ease 0.2s;
-
-  height: calc(100dvh - var(--header-size));
-  overflow: auto;
-
-  scrollbar-color: var(--col-accent) var(--col-bg);
+  width: fit-content ;
 }
 
 .card.full {
@@ -85,6 +91,8 @@ button + button {
 header {
   position: fixed;
   top: 0;
+  left: 0;
+
   height: var(--header-size);
   width: 100%;
   padding: 0.5rem;
@@ -200,8 +208,8 @@ td {
 }
 
 @media screen and (max-width: 600px) {
-  #content {
-    margin-left: 0;
+  :root {
+    padding-left: 0;
   }
 
   #sidebar {
@@ -239,13 +247,14 @@ td {
   transition-delay: 25ms;
 }
 
-#sidebar:empty ~ #content {
-  margin-left: 0;
+:root:has(#sidebar:empty) {
+  padding-left: 0;
 }
 
-#content:has(.menu-container:only-child) {
+#content:has(.menu-container) {
   justify-content: center;
   align-content: center;
+  height: 100%;
 }
 
 .menu-container {

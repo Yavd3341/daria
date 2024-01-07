@@ -222,6 +222,10 @@ function buildCards(withResourses) {
   });
 }
 
+async function loadPage() {
+  return checkSession().then(() => buildCards(true));
+}
+
 function updateLinks(parent) {
   const links = parent.getElementsByTagName("a");
   for (const link of links) {
@@ -230,7 +234,7 @@ function updateLinks(parent) {
       link.addEventListener('click', function(event) {
         event.preventDefault();
         history.pushState(undefined, undefined, link.href);
-        buildCards(true);
+        loadPage();
       }, false);
   }
 }
@@ -240,7 +244,7 @@ function makeSPA() {
   daria.prevHead = "";
 
   updateLinks(document.body);
-  window.addEventListener("popstate", () => buildCards(true));
-
-  buildCards(true);
+  window.addEventListener("popstate", loadPage);
+  
+  loadPage();
 }

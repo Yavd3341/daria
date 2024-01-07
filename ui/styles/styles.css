@@ -46,9 +46,6 @@ body {
   background-color: var(--col-bg);
   color: var(--col-fg);
   margin: 0;
-  
-  width: 100dvw;
-  height: 100dvh;
 
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   letter-spacing: 0.02em;
