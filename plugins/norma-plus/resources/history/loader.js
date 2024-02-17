@@ -58,6 +58,59 @@ daria.builders["quick"] = (card, ctx) => {
 
 daria.builders["balance-history"] = (card, ctx) => {
   const canvas = card.getElementById("canvas");
+
+  let chartData = [];
+  let chartAccum = ctx.balance;
+  let chartLastDate = undefined;
+
+  const options = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  };
+
+  let log = document.createDocumentFragment();
+  function buildRow(date, comment, amount) {
+    let row = document.createElement("tr");
+
+    let cell = document.createElement("td");
+    let isDateOnly = date.getHours() == 0 && date.getMinutes() == 0 &&date.getSeconds() == 0;
+    cell.innerHTML = date.toLocaleDateString(undefined, options) + (!isDateOnly 
+      ? "<br/>" + date.toLocaleTimeString()
+      : "");
+    row.appendChild(cell);
+
+    cell = document.createElement("td");
+    cell.innerText = amount;
+    cell.classList.add("money");
+    if (amount < 0) cell.classList.add("negative");
+    row.appendChild(cell);
+
+    cell = document.createElement("td");
+    cell.innerText = comment;
+    row.appendChild(cell);
+
+    log.appendChild(row);
+  }
+
+  for (const entry of ctx.data) {
+    let date = new Date(entry.date);
+    buildRow(date, entry.comment, entry.amount);
+
+    date.setHours(0, 0, 0, 0);
+
+    if (!chartLastDate || chartLastDate.valueOf() != date.valueOf()) {
+      chartLastDate = date
+      chartData.push({
+        x: date,
+        y: chartAccum
+      });
+    }
+    
+    chartAccum -= entry.amount;
+  }
+  card.getElementById("log").appendChild(log);
+
   return () => {
     new Chart(canvas, {
       type: "line",
@@ -65,8 +118,8 @@ daria.builders["balance-history"] = (card, ctx) => {
         datasets: [
           {
             label: "Balance",
-            data: ctx.data,
-            stepped: true
+            data: chartData,
+            stepped: "after"
           }
         ]
       },
