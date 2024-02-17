@@ -41,7 +41,7 @@
 
 .card img {
   max-width: 75%;
-  margin-bottom: 5dvh;
+  margin-bottom: min(5dvh, 32px);
   display: inline-block;
 }
 
@@ -265,7 +265,7 @@ td {
 }
 
 .menu-container:not(:has(menu)) {
-  margin-bottom: 5dvh;
+  margin-bottom: min(5dvh, 32px);
 }
 
 .menu-container menu {

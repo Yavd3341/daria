@@ -6,7 +6,7 @@ body {
 
 .card {
   text-align: center;
-  width: 256px;
+  width: max(40dvh, 256px);
 }
 
 img {

@@ -56,16 +56,17 @@ body {
 
 .card {
   background-color: var(--col-bg-card);
-  padding: 5dvmin;
+  padding: min(5dvmin, 32px);
   display: inline-block;
   border-radius: 4px;
   box-shadow: 0 0.1rem 5px var(--col-shadow);
+  box-sizing: border-box;
 }
 
 h1 {
   font-weight: normal;
   margin-top: 0;
-  margin-bottom: 5dvh;
+  margin-bottom: min(5dvh, 32px);
 }
 
 input[type=text],
