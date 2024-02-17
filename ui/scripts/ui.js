@@ -118,17 +118,38 @@ function buildCards(withResourses) {
       document.head.innerHTML = daria.initialHead + (recipe.head || "");
   
       if (recipe.scripts) {
-        let fragment = document.createDocumentFragment();
-        for (const script of recipe.scripts) {
-          let element = document.createElement("script");
-          element.setAttribute("src", script);
-          scriptPromises.push(new Promise((resolve, reject) => {
-            element.onload = resolve;
-            element.onerror = reject;
-          }));
-          fragment.appendChild(element);
+        let loadSequentially = recipe.sync != undefined 
+          ? recipe.sync 
+          : true;
+
+        if (loadSequentially) {
+          scriptPromises = [
+            recipe.scripts
+              .map(script => () => {
+                let element = document.createElement("script");
+                element.setAttribute("src", script);
+                document.head.appendChild(element);
+                return new Promise((resolve, reject) => {
+                  element.onload = resolve;
+                  element.onerror = resolve;
+                });
+              })
+              .reduce((last, current) => last.then(current), Promise.resolve())
+          ];
         }
-        document.head.appendChild(fragment);
+        else {
+          let fragment = document.createDocumentFragment();
+          for (const script of recipe.scripts) {
+            let element = document.createElement("script");
+            element.setAttribute("src", script);
+            scriptPromises.push(new Promise((resolve, reject) => {
+              element.onload = resolve;
+              element.onerror = reject;
+            }));
+            fragment.appendChild(element);
+          }
+          document.head.appendChild(fragment);
+        }
       }
 
       let mainScriptsPromise = Promise.allSettled(scriptPromises);
@@ -164,6 +185,8 @@ function buildCards(withResourses) {
   
       await mainScriptsPromise;
     }
+    else 
+      sidebarPromise = buildSidebar();
     
     let cards = document.createDocumentFragment();
     for (const ctx of recipe.data) {
@@ -172,9 +195,14 @@ function buildCards(withResourses) {
       if (!element)
         continue;
 
+      let postAction = undefined;
       if (ctx.type in daria.builders)
-        daria.builders[ctx.type](element, ctx);
+        postAction = daria.builders[ctx.type](element, ctx);
+      
       cards.appendChild(element);
+
+      if (postAction)
+        postAction();
     }
 
     content.appendChild(cards);
