@@ -124,7 +124,7 @@ function extractPaymentInfo(table) {
       result.payments.push({
         date: new Date(cells[0].text),
         source: cells[1].text,
-        value: Number(cells[2].text)
+        amount: Number(cells[2].text)
       })
     }
   }
