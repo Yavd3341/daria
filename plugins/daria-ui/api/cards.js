@@ -5,14 +5,14 @@
 var builders = [];
 var providers = {};
 
-function build(ctx) {
+async function build(ctx) {
   let scripts = [];
   let styles = [];
   let head = [];
   let templates = {};
 
   for (const builder of builders) {
-    let part = builder(ctx);
+    let part = await builder(ctx);
     if (part) {
       if (part.scripts)
         scripts = scripts.concat(part.scripts);
@@ -42,11 +42,11 @@ module.exports = {
   init(router, storage) {
     this.addDataProvider("/", () => storage.dashboard);
 
-    router.post("/cards", ctx => {
+    router.post("/cards", async ctx => {
       ctx.json.cookies = ctx.cookies;
-      let data = ctx.json.url in providers ? providers[ctx.json.url](ctx.json) : [];
+      let data = ctx.json.url in providers ? await providers[ctx.json.url](ctx.json) : [];
       ctx.body = ctx.query["res"]
-        ? { data, ...build(ctx.json) }
+        ? { data, ...await build(ctx.json) }
         : { data };
     });
   },

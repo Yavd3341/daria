@@ -4,10 +4,10 @@
 
 var builders = [];
 
-function build(ctx) {
+async function build(ctx) {
   let sidebar = [];
   for (const builder of builders) {
-    let part = builder(ctx);
+    let part = await builder(ctx);
     if (part?.items?.length > 0)
       sidebar.push(part);
   }
@@ -31,9 +31,9 @@ function makeDariaSidebarPart(ctx) {
 module.exports = {
   init(router) {
     this.addBuilder(makeDariaSidebarPart);
-    router.post("/sidebar", ctx => {
+    router.post("/sidebar", async ctx => {
       ctx.json.cookies = ctx.cookies;
-      ctx.body = build(ctx.json);
+      ctx.body = await build(ctx.json);
     });
   },
 
