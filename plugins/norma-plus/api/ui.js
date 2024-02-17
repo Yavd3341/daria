@@ -1,4 +1,5 @@
 const crawler = require("./crawler");
+const db = require("./db");
 
 function buildCards(ctx) {
   if (ctx.url == "/settings/norma-plus")
@@ -126,7 +127,8 @@ module.exports = (ctx, config) => {
       },
       {
         type: "balance-history",
-        data: [] // Todo: needs database
+        balance: nextMonth.prevBalance,
+        data: db.mergeBalanceLog(db.resolvePaymentsData(payments, true)) // Todo: needs database
       }
     ];
 
