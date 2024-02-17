@@ -38,7 +38,7 @@ function buildSidebar() {
   let ctx = {
     actions: Object.keys(daria.actions || {}),
     url: location.pathname,
-    querry: location.search
+    querry: Object.fromEntries(new URLSearchParams(location.search))
   };
 
   return new Promise((resolve, reject) => 
@@ -91,7 +91,7 @@ function buildCards(withResourses) {
   let ctx = {
     actions: Object.keys(daria.actions || {}),
     url: location.pathname,
-    querry: location.search
+    querry: Object.fromEntries(new URLSearchParams(location.search))
   };
 
   let sidebarPromise;
