@@ -1,0 +1,78 @@
+#heading {
+  margin: 0;
+  padding: calc(var(--content-spacing) * 1.5);
+  padding-top: calc(var(--content-spacing) * 0.5);
+
+  width: 100%;
+  border-bottom: 2px solid var(--col-accent);
+}
+
+canvas {
+  max-height: 256px;
+  margin-bottom: 1em;
+}
+
+.card#graph {
+  width: 100%;
+}
+
+.card:has(#balance) {
+  text-align: center;
+}
+
+#balance {
+  font-size: 30pt;
+  margin: 0 auto min(5dvh, 32px);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.costs table {
+  text-align: left;
+}
+
+.costs td {
+  padding: 0.25em 0;
+  vertical-align: top;
+  border: none;
+}
+
+.costs tr {
+  border: none;
+}
+
+.costs tbody tr:last-child td {
+  padding-bottom: 0.75em;
+  border-bottom: var(--col-accent) 2px solid;
+}
+
+.costs tfoot td {
+  padding-top: 0.75em;
+  font-weight: bold;
+}
+
+td.money {
+  text-align: right;
+}
+
+.money::after {
+  content: "₴";
+  margin-left: 0.2em;
+}
+
+.warning#balance {
+  background-color: var(--col-yellow);
+  color: var(--col-fg-inversed);
+}
+
+.negative#balance {
+  background-color: var(--col-red);
+  color: var(--col-fg-inversed);
+}
+
+@media screen and (max-width: 600px) {
+  .card {
+    width: 100%;
+  }
+}

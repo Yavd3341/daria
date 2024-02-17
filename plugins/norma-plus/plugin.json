@@ -1,0 +1,8 @@
+{
+  "id": "norma-plus",
+  "name": "Norma PLUS plugin",
+  "author": "Yavd",
+  "version": "internal-dev",
+  "dependencies": [ "ui", "storage-mgr" ],
+  "entry": "api"
+}

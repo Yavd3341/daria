@@ -1,0 +1,39 @@
+#settings {
+  min-width: 350px;
+  text-align: center;
+}
+
+section {
+  margin-bottom: 2em;
+}
+
+section.line > * {
+  margin-bottom: 0;
+}
+
+@media screen and (max-width: 600px) {
+  #content {
+    flex-direction: column;
+  }
+
+  #settings {
+    position: unset;
+    align-self: unset;
+    min-width: 256px;
+  }
+
+  #settings .layout,
+  #settings form {
+    display: flex;
+    gap: var(--content-spacing);
+  }
+
+  #settings .layout > *,
+  #settings form > * {
+    flex-grow: 1;
+  }
+
+  button + button {
+    margin-top: 0;
+  }
+}
