@@ -17,6 +17,11 @@
   --col-red-overlay: #C4434340;
   --col-red-light: #FFEBEB;
   --col-red-dark: #943838;
+
+  --col-yellow: #e9c155;
+  --col-yellow-overlay: #6b5310;
+  --col-yellow-light: #fff1cc;
+  --col-yellow-dark: #b6922c;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,6 +44,11 @@
     --col-red-overlay: #C4434340;
     --col-red-light: #5f2f2f;
     --col-red-dark: #662222;
+
+    --col-yellow: #9b7610;
+    --col-yellow-overlay: #353024;
+    --col-yellow-light: #473f2c;
+    --col-yellow-dark: #604e1b;
   }
 }
 
