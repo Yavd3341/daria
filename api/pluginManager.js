@@ -187,7 +187,8 @@ module.exports = {
                 app: ctx.app,
                 koa: ctx.koa,
                 pluginManager: this,
-                appRoot: ctx.appRoot
+                appRoot: ctx.appRoot,
+                eventBus: ctx.eventBus
               };
 
               plugins[id].lib.init(pluginCtx);
@@ -208,6 +209,7 @@ module.exports = {
         console.error(`Failed to load unregistered plugin ${id}`);
     }
     console.log("Plugins loaded");
+    ctx.eventBus.fire("plugins-loaded");
   },
 
   getPluginList() {

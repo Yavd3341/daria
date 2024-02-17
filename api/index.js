@@ -6,13 +6,16 @@ const router = new Router();
 
 app.use(require("./koaJson.js"));
 
+const eventBus = require("./eventBus.js");
+
 const { join } = require("path");
 const pluginManager = require("./pluginManager.js");
 pluginManager.init({
   app: this,
   koa: app,
   router: router,
-  appRoot: join(__dirname, "..")
+  appRoot: join(__dirname, ".."),
+  eventBus: eventBus
 });
 
 if (!pluginManager.getPlugin("login-mgr")) {
