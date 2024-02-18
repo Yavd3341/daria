@@ -112,7 +112,7 @@ daria.builders["balance-history"] = (card, ctx) => {
   card.getElementById("log").appendChild(log);
 
   return () => {
-    new Chart(canvas, {
+    const chart = new Chart(canvas, {
       type: "line",
       data: {
         datasets: [
@@ -140,5 +140,26 @@ daria.builders["balance-history"] = (card, ctx) => {
         }
       }
     });
+
+    function updateColors() {
+      const css = getComputedStyle(document.body);
+
+      chart.data.datasets[0].borderColor = css.getPropertyValue("--col-accent");
+      
+      const textColor = css.getPropertyValue("--col-fg");
+      chart.options.scales.x.ticks.color = textColor;
+      chart.options.scales.y.ticks.color = textColor;
+      
+      const gridColor = css.getPropertyValue("--col-grid");
+      chart.options.scales.x.grid.color = gridColor;
+      chart.options.scales.y.grid.color = gridColor;
+
+      chart.update();
+    }
+
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", updateColors);
+    updateColors();
   };
 };
