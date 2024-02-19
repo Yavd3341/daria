@@ -23,19 +23,13 @@ function buildCards(ctx) {
         "https://cdn.jsdelivr.net/npm/chart.js",
         "https://cdn.jsdelivr.net/npm/luxon",
         "https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon",
-        "/plugins/norma-plus/history/loader.js",
-        "/plugins/norma-plus/user-info/loader.js"
+        "/plugins/norma-plus/main/loader.js"
       ],
       styles: [
-        "/plugins/norma-plus/history/styles.css",
-        "/plugins/norma-plus/user-info/styles.css"
+        "/plugins/norma-plus/main/styles.css"
       ],
-      templates: { 
-        "header": "norma-plus/history/header.html",
-        "user-info": "norma-plus/user-info/index.html",
-        "quick": "norma-plus/history/quick.html",
-        "balance-history": "norma-plus/history/balance-history.html",
-        //"log": "norma-plus/history/log.html"
+      templates: {
+        "main": "norma-plus/main/index.html"
       }
     };
 }
@@ -92,13 +86,6 @@ module.exports = (ctx, config) => {
       ...config.credentials
     }];
 
-    const userInfo = await crawler.getUserInfo();
-    if (userInfo)
-      data.push({
-        type: "user-info",
-        ...userInfo
-      })
-
     return data;
   });
 
@@ -113,21 +100,11 @@ module.exports = (ctx, config) => {
 
     let data = [
       {
-        type: "header"
-      },
-      {
-        type: "user-info",
-        ...userInfo
-      },
-      {
-        type: "quick",
+        type: "main",
+        userInfo,
         balance: nextMonth.prevBalance,
         currentMonth: payments.at(-2).spendings,
-        nextMonth: nextMonth.spendings
-      },
-      {
-        type: "balance-history",
-        balance: nextMonth.prevBalance,
+        nextMonth: nextMonth.spendings,
         data: db.mergeBalanceLog(db.resolvePaymentsData(payments, true)) // Todo: needs database
       }
     ];

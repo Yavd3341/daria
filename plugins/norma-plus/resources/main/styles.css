@@ -1,10 +1,36 @@
-#heading {
-  margin: 0;
-  padding: calc(var(--content-spacing) * 1.5);
-  padding-top: calc(var(--content-spacing) * 0.5);
+#user-info {
+  min-width: 256px;
+  text-align: center;
+  align-self: flex-start;
+}
 
+#user-info table {
+  text-align: left;
+}
+
+#user-info td {
+  padding: 0.25em 0;
+  vertical-align: top;
+  border: none !important;
+}
+
+#user-info tr {
+  border: none !important;
+}
+
+#user-info td:nth-child(2) {
+  font-weight: bold;
+  padding-left: 1em;
   width: 100%;
-  border-bottom: 2px solid var(--col-accent);
+}
+
+#user-info a {
+  display: block;
+}
+
+#user-info a + a {
+  display: block;
+  line-height: 1.5em;
 }
 
 canvas {

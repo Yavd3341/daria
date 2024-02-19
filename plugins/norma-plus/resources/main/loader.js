@@ -31,7 +31,34 @@ function fillMonthCosts(table, monthData) {
   return costSum;
 }
 
-daria.builders["quick"] = (card, ctx) => {
+function fillField(card, id, value) {
+  let cell = card.getElementById(id);
+
+  if (value != undefined && value.toString().trim().length > 0)
+    cell.innerText = value;
+  else {
+    let line = cell.parentElement;
+    line.parentElement.removeChild(line);
+  }
+}
+
+daria.builders["main"] = (card, ctx) => {
+  // Load user info
+  fillField(card, "account", ctx.userInfo.account);
+  fillField(card, "name", ctx.userInfo.name);
+  fillField(card, "address", ctx.userInfo.address);
+
+  let phones = document.createDocumentFragment();
+  for (const phone of ctx.userInfo.phones) {
+    let elem = document.createElement("a");
+    elem.href = "tel:" + phone;
+    elem.innerText = phone;
+    phones.appendChild(elem);
+  }
+
+  card.getElementById("phones").appendChild(phones);
+
+  // Load top cards
   // Current spendings
   fillMonthCosts(card.getElementById("costs-current"), ctx.currentMonth);
 
@@ -54,9 +81,8 @@ daria.builders["quick"] = (card, ctx) => {
   }
   else
     auxInfo.innerText = `(up to ${balanceMonths} month${balanceMonths > 1 ? "s" : ""})`;
-};
 
-daria.builders["balance-history"] = (card, ctx) => {
+  // Load balance
   const canvas = card.getElementById("canvas");
 
   let chartData = [];
