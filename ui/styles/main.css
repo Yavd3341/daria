@@ -126,6 +126,19 @@ header #title {
   font-weight: bold;
 }
 
+#content > h1 {
+  margin: 0;
+  padding: calc(var(--content-spacing) * 1.5);
+  padding-top: calc(var(--content-spacing) * 0.5);
+
+  width: 100%;
+  border-bottom: 2px solid var(--col-accent);
+}
+
+#content > h1:not(:first-child) {
+  padding-top: calc(var(--content-spacing) * 1.5);
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
