@@ -34,7 +34,7 @@ function fillMonthCosts(table, monthData) {
 function fillField(card, id, value) {
   let cell = card.getElementById(id);
 
-  if (value != undefined && value.toString().trim().length > 0)
+  if (value?.toString().trim().length > 0)
     cell.innerText = value;
   else {
     let line = cell.parentElement;
@@ -125,7 +125,7 @@ daria.builders["main"] = (card, ctx) => {
 
     date.setHours(0, 0, 0, 0);
 
-    if (!chartLastDate || chartLastDate.valueOf() != date.valueOf()) {
+    if (chartLastDate?.valueOf() != date.valueOf()) {
       chartLastDate = date
       chartData.push({
         x: date,
@@ -184,7 +184,7 @@ daria.builders["main"] = (card, ctx) => {
     }
 
     window
-      .matchMedia("(prefers-color-scheme: dark)")
+      .matchMedia?.("(prefers-color-scheme: dark)")
       .addEventListener("change", updateColors);
     updateColors();
   };
