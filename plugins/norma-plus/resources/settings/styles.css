@@ -1,39 +1,70 @@
-#settings {
-  min-width: 350px;
-  text-align: center;
+h2 {
+  width: 100%;
+  margin-top: 0;
 }
 
-section {
-  margin-bottom: 2em;
+#accountEdit {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  width: 300px;
 }
 
-section.line > * {
-  margin-bottom: 0;
+.red {
+  --col-shadow: var(--col-red);
+  --col-accent: var(--col-red);
+  --col-accent-dark: var(--col-red-dark);
+}
+
+.line,
+td:last-child {
+  display: flex;
+  gap: 0 calc(var(--content-spacing) / 2);
+}
+
+form > 
+.line {
+  gap: 0 calc(var(--content-spacing) * 3);
+}
+
+.line {
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+#table {
+  flex-grow: 1;
+  height: min-content;
+  min-width: min-content;
+}
+
+table button {
+  padding: 0.35em 0.45em;
+  width: auto;
+  display: initial;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.session {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+th:last-child {
+  width: 1px;
+}
+
+.label-like,
+label {
+  display: block;
+  margin-bottom: 0.5em;
+  flex-grow: 1;
 }
 
 @media screen and (max-width: 600px) {
-  #content {
-    flex-direction: column;
-  }
-
-  #settings {
+  #accountEdit {
     position: unset;
-    align-self: unset;
-    min-width: 256px;
-  }
-
-  #settings .layout,
-  #settings form {
-    display: flex;
-    gap: var(--content-spacing);
-  }
-
-  #settings .layout > *,
-  #settings form > * {
+    width: 100%;
     flex-grow: 1;
-  }
-
-  button + button {
-    margin-top: 0;
   }
 }

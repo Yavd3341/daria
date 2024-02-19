@@ -1,27 +1,124 @@
-<div id="settings" class="card">
-  <h1>Norma PLUS</h1>
-  
-  <form id="form">
+<form id="settingsForm" class="card">
+  <h1>Norma PLUS settings</h1>
+
+  <div class="line">
     <div>
-      <b>Account No.</b>
-      <section>
-        <input id="account" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Enter ID" name="account" required>
-      </section>
+      <h2>Database</h2>
 
-      <b>Username</b>
-      <section>
-        <input id="user" type="text" placeholder="Enter Username" name="user" required>
-      </section>
-  
-      <b>Password</b>
-      <section class="line">
-        <input id="newPass" type="password" placeholder="Enter new Password" name="newPass" required>
-      </section>
+      <div class="line">
+        <label>
+          <b>Host</b>
+          <input id="host" type="text" placeholder="Use default host" name="host">
+        </label>
+
+        <label>
+          <b>Port</b>
+          <input id="port" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Use default port" name="port">
+        </label>
+
+        <label>
+          <b>Database</b>
+          <input id="db" type="text" placeholder="Enter database" name="db" required>
+        </label>
+      </div>
+
+      <div class="line">
+        <label>
+          <b>Gatherer username</b>
+          <input id="usernameGatherer" type="text" placeholder="Enter username" name="usernameGatherer" required>
+        </label>
+
+        <label>
+          <b>Gatherer password</b>
+          <input id="passwordGatherer" type="password" placeholder="Enter new password" name="passwordGatherer">
+        </label>
+      </div>
+
+      <div class="line">
+        <label>
+          <b>Guest username</b>
+          <input id="usernameGuest" type="text" placeholder="Enter username" name="usernameGuest" required>
+        </label>
+
+        <label>
+          <b>Guest password</b>
+          <input id="passwordGuest" type="password" placeholder="Enter new password" name="passwordGuest">
+        </label>
+      </div>
+
+      <div class="line">
+        <label>
+          <b>Admin username</b>
+          <input id="usernameAdmin" type="text" placeholder="Enter username" name="usernameAdmin" required>
+        </label>
+
+        <label>
+          <b>Admin password</b>
+          <input id="passwordAdmin" type="password" placeholder="Enter new password" name="passwordAdmin">
+        </label>
+      </div>
     </div>
-  </form>
 
-  <div class="layout">
-    <button id="submit" form="form" type="submit">Apply</button>
-    <button id="refreshSession">Refresh session</button>
+    <div>
+      <h2>Miscellaneous</h2>
+
+      <b class="label-like">Update timer</b>
+      <div class="line">
+        <label>
+          <input id="useInternalTimer" type="checkbox" name="useInternalTimer">
+          Use internal update timer (requires restart)
+        </label>
+      </div>
+    </div>
   </div>
+
+  <button id="submit" type="submit">Save</button>
+</form>
+
+<h1>Managed accounts</h1>
+
+<form id="accountEdit" class="card line">
+  <label>
+    <b>Account No.</b>
+    <input id="account" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Enter ID" name="account" required>
+  </label>
+
+  <label>
+    <b>Username</b>
+    <input id="user" type="text" placeholder="Enter username" name="user" required>
+  </label>
+
+  <label>
+    <b>Password</b>
+    <input id="newPass" type="password" placeholder="Enter new password" name="newPass" required>
+  </label>
+
+  <button id="submit" type="submit">Save</button>
+</form>
+
+<div id="table" class="card">
+  <template id="row">
+    <tr>
+      <td>Account</td>
+      <td>Name</td>
+      <td>Adress</td>
+      <td>
+        <button id="edit">Edit credentials</button>
+        <button class="red" id="delete">Delete</button>
+      </td>
+    </tr>
+  </template>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Account</th>
+        <th>Name</th>
+        <th>Adress</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="accounts">
+    </tbody>
+  </table>
 </div>

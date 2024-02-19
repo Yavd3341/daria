@@ -1,12 +1,8 @@
 daria.builders["settings"] = (fragment, ctx) => {
-  let form = fragment.getElementById("form");
+  let form = fragment.getElementById("accountEdit");
 
   let inputAccount = fragment.getElementById("account");
-  inputAccount.value = ctx.account;
-
   let inputUsername = fragment.getElementById("user");
-  inputUsername.value = ctx.username;
-
   let inputPassword = fragment.getElementById("newPass");
   
   let submit = fragment.getElementById("submit");
@@ -34,7 +30,7 @@ daria.builders["settings"] = (fragment, ctx) => {
     event.preventDefault();
   };
 
-  let refreshSession = fragment.getElementById("refreshSession");
-  refreshSession.onclick = () => 
-    postAjax("/api/norma-plus/refresh-session", {});
+  // let refreshSession = fragment.getElementById("refreshSession");
+  // refreshSession.onclick = () => 
+  //   postAjax("/api/norma-plus/refresh-session", {});
 };

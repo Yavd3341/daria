@@ -5,16 +5,13 @@ function buildCards(ctx) {
   if (ctx.url == "/settings/norma-plus")
     return {
       scripts: [
-        "/plugins/norma-plus/settings/loader.js", 
-        "/plugins/norma-plus/user-info/loader.js"
+        "/plugins/norma-plus/settings/loader.js"
       ],
       styles: [
-        "/plugins/norma-plus/settings/styles.css",
-        "/plugins/norma-plus/user-info/styles.css"
+        "/plugins/norma-plus/settings/styles.css"
       ],
       templates: { 
-        "settings": "norma-plus/settings/index.html", 
-        "user-info": "norma-plus/user-info/index.html" 
+        "settings": "norma-plus/settings/index.html" 
       }
     };
   else if (ctx.url == "/pages/norma-plus")
@@ -83,7 +80,7 @@ module.exports = (ctx, config) => {
   uiManager.addDataProvider("/settings/norma-plus", async ctx => {
     let data = [{
       type: "settings",
-      ...config.credentials
+      // Todo: requires DB
     }];
 
     return data;
