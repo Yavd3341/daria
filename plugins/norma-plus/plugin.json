@@ -3,6 +3,6 @@
   "name": "Norma PLUS plugin",
   "author": "Yavd",
   "version": "internal-dev",
-  "dependencies": [ "ui", "storage-mgr" ],
+  "dependencies": [ "ui", "storage-mgr", "postgresql" ],
   "entry": "api"
 }

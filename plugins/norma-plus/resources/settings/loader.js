@@ -66,7 +66,7 @@ daria.builders["settings"] = (fragment, ctx) => {
       }, xhr => {
         if (xhr.readyState == 4) {
           if (xhr.status == 200)
-            submit.innerText = "Save";
+            buildCards(false);
           else {
             submit.classList.add("error");
             submit.innerText = "Failed to apply";
@@ -124,7 +124,7 @@ daria.builders["settings"] = (fragment, ctx) => {
       }, xhr => {
         if (xhr.readyState == 4) {
           if (xhr.status == 200)
-            saveCreds.innerText = "Save";
+            buildCards(false);
           else {
             saveCreds.classList.add("error");
             saveCreds.innerText = "Failed to apply";

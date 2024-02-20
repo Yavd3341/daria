@@ -123,9 +123,8 @@ daria.builders["main"] = (card, ctx) => {
     let date = new Date(entry.date);
     buildRow(date, entry.comment, entry.amount);
 
-    date.setHours(0, 0, 0, 0);
-
-    if (chartLastDate?.valueOf() != date.valueOf()) {
+    // Difference between dates/time > 1 minute
+    if (!chartLastDate || (chartLastDate - date) / 60000 > 1) {
       chartLastDate = date
       chartData.push({
         x: date,

@@ -1,22 +1,31 @@
 const { parse } = require("node-html-parser")
+const db = require("./db")
 var needle = undefined
 
-var session = undefined
-var credentials = undefined
+var sessions = []
 var maxTries = 5
 
 module.exports = {
-  init, login, getUserInfo, getPayments, getSession
+  init, 
+  
+  login,
+  deleteAccount,
+  getSession,
+  
+  getManagedAccounts, 
+  getUserInfo, 
+  getPayments
 }
 
 function init(needleLib, config) {
   needle = needleLib
-  credentials = config.credentials
   maxTries = config.maxTries
 }
 
-async function login(overrideCreds) {
-  let creds = overrideCreds || credentials
+async function login(credentials) {
+  let creds = Number.isInteger(credentials)
+    ? await db.getLoginInfo(credentials)
+    : credentials
 
   if (!(creds && creds.account != 0 && creds.username && creds.password))
     return
@@ -27,16 +36,43 @@ async function login(overrideCreds) {
 
   if (response.cookies) {
     // Session "secret" is not required and will be sent by backend if missing anyway
-    session = Object.entries(response.cookies)[0][0]
-    console.log("[Norma PLUS] New session acquired")
+    sessions[creds.account] = Object.entries(response.cookies)[0][0]
+    console.log("[Norma PLUS] New session acquired for account " + creds.account)
     return true
   }
   
   return false
 }
 
-async function getUserInfo() {
-  const response = await get("userinfo")
+async function deleteAccount(account) {
+  const result = await db.deleteAccount(account)
+    .then(true)
+    .catch(false);
+
+  if (result)
+    delete sessions[account];
+
+  return result;
+}
+
+async function getManagedAccounts() {
+  const accounts = await db.getManagedAccounts()
+  return accounts 
+    ? Promise.all(
+        accounts.map(
+          account => getUserInfo(account)
+            .then(userInfo => ({
+              account,
+              name: userInfo.name,
+              address: userInfo.address
+            }))
+        )
+      )
+    : []
+}
+
+async function getUserInfo(account) {
+  const response = await get("userinfo", account)
 
   if (!response)
     return undefined
@@ -49,7 +85,6 @@ async function getUserInfo() {
   const infoRows = root.getElementsByTagName("tr").map(row => row.getElementsByTagName("td")[1])
 
   const userInfo = {
-    account: Number(infoRows[0].text),
     date: new Date(infoRows[1].text),
     name: infoRows[2].text,
     address: infoRows[3].text,
@@ -60,8 +95,8 @@ async function getUserInfo() {
   return userInfo
 }
 
-async function getPayments() {
-  const response = await get("payments")
+async function getPayments(account) {
+  const response = await get("payments", account)
 
   if (!response)
     return undefined
@@ -77,24 +112,24 @@ async function getPayments() {
   return info
 }
 
-function getSession() {
-  return session
+function getSession(account) {
+  return sessions[account]
 }
 
-async function get(page, tryNumber) {
-  if (maxTries <= tryNumber)
+async function get(page, account, tryNumber) {
+  if (!account || maxTries <= tryNumber)
     return undefined
 
-  console.log("[Norma PLUS] Fetching " + page)
-  if (!session)
-    await login()
+  console.log(`[Norma PLUS] Fetching ${page} for account ${account}`)
+  if (!sessions[account])
+    await login(account)
 
-  const response = await needle("get", `http://userstat.normaplus.com/templates/nav-${page}/index.php?session=${session}`)
+  const response = await needle("get", `http://userstat.normaplus.com/templates/nav-${page}/index.php?session=${sessions[account]}`)
 
   if (response.body == "Текущая сессия устарела. Нажмите выход") {
-    console.log("[Norma PLUS] Invalid session")
-    session = undefined
-    return await get(page, (tryNumber || 0) + 1)
+    console.log("[Norma PLUS] Invalid session for account " + account)
+    sessions[account] = undefined
+    return await get(page, account, (tryNumber || 0) + 1)
   }
   else
     return response.body

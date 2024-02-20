@@ -1,7 +1,7 @@
 const crawler = require("./crawler");
 const db = require("./db");
 
-function buildCards(ctx) {
+async function buildCards(ctx) {
   if (ctx.url == "/settings/norma-plus")
     return {
       scripts: [
@@ -32,14 +32,20 @@ function buildCards(ctx) {
 }
 
 async function buildSidebar(ctx) {
-  let part = {
+  const part = {
     name: "Norma PLUS",
     items: []
   };
 
-  let isDashboard = ctx.url == "/";
-  let isPluginSettings = ctx.url == "/settings/norma-plus";
-  let isMainPage = ctx.url == "/pages/norma-plus";
+  const isDashboard = ctx.url == "/";
+  const isPluginSettings = ctx.url == "/settings/norma-plus";
+  const isMainPage = ctx.url == "/pages/norma-plus";
+
+  const accounts = await db.getManagedAccounts();
+  let account = Number(ctx.query.account);
+
+  if (!account && accounts?.length == 1)
+    account = accounts[0];
 
   if (isDashboard || isPluginSettings)
     part.items.push({
@@ -47,13 +53,16 @@ async function buildSidebar(ctx) {
       url: "/pages/norma-plus"
     });
   
-    if (isDashboard || isMainPage) {
-      if (!crawler.getSession())
-        await crawler.login();
+    if (isMainPage) {
+      if (!crawler.getSession(account))
+        await crawler.login(account);
+
+      const session = crawler.getSession(account);
+        
       part.items.push(
         {
           name: "Open cabinet",
-          url: `https://userstat.normaplus.com/index.php?session=${crawler.getSession()}`
+          url: "https://userstat.normaplus.com/index.php" + (session ? `?session=${session}` : "")
         },
         {
           name: "Add cash",
@@ -71,28 +80,72 @@ async function buildSidebar(ctx) {
   return part;
 }
 
+async function buildSidebarAccounts(ctx) {
+  const accounts = await db.getManagedAccounts();
+
+  if (!(accounts?.length > 1) || !ctx.url.startsWith("/pages/norma-plus"))
+    return;
+
+  const part = {
+    name: "Accounts",
+    items: []
+  };
+
+  for (const account of accounts)
+   if (account != ctx.query.account)
+      part.items.push({
+        name: account,
+        url: "/pages/norma-plus?account=" + account
+      })
+
+  return part;
+}
+
 module.exports = (ctx, config) => {
   const uiManager = ctx.pluginManager.getPlugin("ui");
 
   uiManager.addCardsBuilder(buildCards);
   uiManager.addSidebarBuilder(buildSidebar);
+  uiManager.addSidebarBuilder(buildSidebarAccounts);
 
   uiManager.addDataProvider("/settings/norma-plus", async ctx => {
     let data = [{
       type: "settings",
-      // Todo: requires DB
+      
+      database: config.database,
+      users: {
+        login: config.credentials.login?.user,
+        gatherer: config.credentials.gatherer?.user,
+        user: config.credentials.user?.user
+      },
+
+      useInternalTimer: config.useInternalTimer,
+
+      accounts: await crawler.getManagedAccounts()
     }];
 
     return data;
   });
 
   uiManager.addDataProvider("/pages/norma-plus", async ctx => {
-    const userInfo = await crawler.getUserInfo();
+    const accounts = await db.getManagedAccounts();
+    let account = Number(ctx.query.account);
+
+    if (!account && accounts?.length == 1)
+      account = accounts[0];
+
+    if (!crawler.getSession(account))
+      await crawler.login(account);
+
+    if (!crawler.getSession(account))
+      return;
+
+    const userInfo = await crawler.getUserInfo(account);
 
     if (!userInfo)
       return undefined;
 
-    const payments = await crawler.getPayments();
+    const payments = await crawler.getPayments(account);
     const nextMonth = payments.at(-1);
 
     let data = [
@@ -102,7 +155,7 @@ module.exports = (ctx, config) => {
         balance: nextMonth.prevBalance,
         currentMonth: payments.at(-2).spendings,
         nextMonth: nextMonth.spendings,
-        data: db.mergeBalanceLog(db.resolvePaymentsData(payments, true)) // Todo: needs database
+        data: await db.getRecords(account, ctx.query.days > 0 ? ctx.query.days : 365)
       }
     ];
 
