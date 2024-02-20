@@ -38,7 +38,7 @@ function buildSidebar() {
   let ctx = {
     actions: Object.keys(daria.actions || {}),
     url: location.pathname,
-    querry: Object.fromEntries(new URLSearchParams(location.search))
+    query: Object.fromEntries(new URLSearchParams(location.search))
   };
 
   return new Promise((resolve, reject) => 
@@ -91,7 +91,7 @@ function buildCards(withResourses) {
   let ctx = {
     actions: Object.keys(daria.actions || {}),
     url: location.pathname,
-    querry: Object.fromEntries(new URLSearchParams(location.search))
+    query: Object.fromEntries(new URLSearchParams(location.search))
   };
 
   let sidebarPromise;
@@ -188,24 +188,25 @@ function buildCards(withResourses) {
     else 
       sidebarPromise = buildSidebar();
     
-    let cards = document.createDocumentFragment();
-    for (const ctx of recipe.data) {
-      let element = document.getElementById(ctx.type)?.content.cloneNode(true);
-
-      if (!element)
-        continue;
-
-      let postAction = undefined;
-      if (ctx.type in daria.builders)
-        postAction = daria.builders[ctx.type](element, ctx);
-      
-      cards.appendChild(element);
-
-      if (postAction)
-        postAction();
+    if (recipe.data) {
+      let cards = document.createDocumentFragment();
+      for (const ctx of recipe.data) {
+        let element = document.getElementById(ctx.type)?.content.cloneNode(true);
+  
+        if (!element)
+          continue;
+  
+        let postAction = undefined;
+        if (ctx.type in daria.builders)
+          postAction = daria.builders[ctx.type](element, ctx);
+        
+        cards.appendChild(element);
+  
+        if (postAction)
+          postAction();
+      }
+      content.appendChild(cards);
     }
-
-    content.appendChild(cards);
 
     if (content.children.length == 0) {
       await sidebarPromise;
