@@ -34,7 +34,8 @@ module.exports = {
   },
 
   unregisterListener(listener) {
-    if (LISTENERS.includes(listener))
-      LISTENERS.pop(listener);
+    const index = LISTENERS.indexOf(listener);
+    if (index != -1)
+      LISTENERS.splice(index, 1);
   }
 }
