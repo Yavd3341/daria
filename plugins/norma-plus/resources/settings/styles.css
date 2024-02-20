@@ -4,6 +4,7 @@ h2 {
 }
 
 #accountEdit {
+  height: min-content;
   position: -webkit-sticky;
   position: sticky;
   top: 0;
@@ -20,6 +21,7 @@ h2 {
 td:last-child {
   display: flex;
   gap: 0 calc(var(--content-spacing) / 2);
+  align-items: baseline;
 }
 
 form > 
@@ -59,6 +61,10 @@ label {
   display: block;
   margin-bottom: 0.5em;
   flex-grow: 1;
+}
+
+#delete {
+  margin-left: auto;
 }
 
 @media screen and (max-width: 600px) {

@@ -18,43 +18,43 @@
 
         <label>
           <b>Database</b>
-          <input id="db" type="text" placeholder="Enter database" name="db" required>
+          <input id="database" type="text" placeholder="Enter database" name="database" required>
         </label>
       </div>
 
-      <div class="line">
+      <div id="loginUser" class="line">
+        <label>
+          <b>Login user username</b>
+          <input type="text" placeholder="Enter username" name="username" required>
+        </label>
+
+        <label>
+          <b>Login user password</b>
+          <input type="password" placeholder="Enter new password" name="password">
+        </label>
+      </div>
+
+      <div id="gathererUser" class="line">
         <label>
           <b>Gatherer username</b>
-          <input id="usernameGatherer" type="text" placeholder="Enter username" name="usernameGatherer" required>
+          <input type="text" placeholder="Enter username" name="username" required>
         </label>
 
         <label>
           <b>Gatherer password</b>
-          <input id="passwordGatherer" type="password" placeholder="Enter new password" name="passwordGatherer">
+          <input type="password" placeholder="Enter new password" name="password">
         </label>
       </div>
 
-      <div class="line">
+      <div id="userUser" class="line">
         <label>
-          <b>Guest username</b>
-          <input id="usernameGuest" type="text" placeholder="Enter username" name="usernameGuest" required>
+          <b>Normal user username</b>
+          <input type="text" placeholder="Enter username" name="username" required>
         </label>
 
         <label>
-          <b>Guest password</b>
-          <input id="passwordGuest" type="password" placeholder="Enter new password" name="passwordGuest">
-        </label>
-      </div>
-
-      <div class="line">
-        <label>
-          <b>Admin username</b>
-          <input id="usernameAdmin" type="text" placeholder="Enter username" name="usernameAdmin" required>
-        </label>
-
-        <label>
-          <b>Admin password</b>
-          <input id="passwordAdmin" type="password" placeholder="Enter new password" name="passwordAdmin">
+          <b>Normal user password</b>
+          <input type="password" placeholder="Enter new password" name="password">
         </label>
       </div>
     </div>
@@ -90,20 +90,19 @@
 
   <label>
     <b>Password</b>
-    <input id="newPass" type="password" placeholder="Enter new password" name="newPass" required>
+    <input id="pass" type="password" placeholder="Enter password" name="pass" required>
   </label>
 
-  <button id="submit" type="submit">Save</button>
+  <button id="saveCreds" type="submit">Update credentials</button>
 </form>
 
-<div id="table" class="card">
+<div class="card" id="table">
   <template id="row">
     <tr>
-      <td>Account</td>
-      <td>Name</td>
-      <td>Adress</td>
+      <td id="account"></td>
+      <td id="name"></td>
       <td>
-        <button id="edit">Edit credentials</button>
+        <span id="address"></span>
         <button class="red" id="delete">Delete</button>
       </td>
     </tr>
@@ -112,10 +111,9 @@
   <table>
     <thead>
       <tr>
-        <th>Account</th>
-        <th>Name</th>
-        <th>Adress</th>
-        <th>Actions</th>
+        <th width="10%">Account</th>
+        <th width="45%">Name</th>
+        <th width="45%">Adress</th>
       </tr>
     </thead>
     <tbody id="accounts">
