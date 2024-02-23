@@ -146,7 +146,7 @@ module.exports = {
 
     if (config.useInternalTimer) {
       dbPromise.then(db.getManagedAccounts).then(gather);
-      setInterval(gather, 24 * 60 * 60 * 1000); // Once a day
+      setInterval(() => db.getManagedAccounts().then(gather), 24 * 60 * 60 * 1000); // Once a day
     }
 
     require("./ui")(ctx, config);
