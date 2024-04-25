@@ -141,6 +141,13 @@ module.exports = {
       ).catch(errorHandler);
   },
 
+  async getCurrentMonthSpendings(account) {
+    return user?.getRows(
+      "SELECT comment name, amount cost FROM spendings WHERE date = DATE(DATE_TRUNC('month', NOW())) AND account = $1",
+      [account]
+    ).catch(errorHandler)
+  },
+
   async addRecords(records) {
     if (records.length == 0)
       return;

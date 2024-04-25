@@ -155,7 +155,7 @@ module.exports = (ctx, config) => {
         type: "main",
         userInfo,
         balance: nextMonth.prevBalance,
-        currentMonth: payments.at(-2).spendings,
+        currentMonth: await db.getCurrentMonthSpendings(account),
         nextMonth: nextMonth.spendings,
         data: await db.getRecords(account, ctx.query.days > 0 ? ctx.query.days : 365)
       }
