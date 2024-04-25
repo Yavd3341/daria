@@ -9,6 +9,11 @@ var postgres;
 var usesDefaultHost;
 var connected;
 
+function errorHandler(error) {
+  console.error("[Norma PLUS] " + error);
+  return undefined;
+}
+
 function resolvePaymentsData(data) {
   let spendings = [];
   let payments = [];
@@ -88,8 +93,8 @@ async function tryConnect() {
     ]);
     connected = true;
   }
-  catch (e) {
-    console.error("[Norma PLUS] " + e);
+  catch (error) {
+    errorHandler(error);
   }
 
   return connected;
@@ -114,30 +119,33 @@ module.exports = {
     return login?.query({
       text: "SELECT account FROM accounts",
       rowMode: "array"
-    }).then(response => response.rows.flat())
+    }).then(response => response.rows.flat()).catch(errorHandler)
   },
 
   async deleteAccount(account) {
-    return login?.query("DELETE FROM accounts WHERE account = $1", [account])
+    return login?.query("DELETE FROM accounts WHERE account = $1", [account]).catch(errorHandler)
   },
 
   async getLoginInfo(account) {
     return account 
       ? login?.getRows("SELECT * FROM accounts WHERE account = $1", [account])
-          .then(rows => rows.length != 0 ? rows[0] : undefined)
-      : login?.getRows("SELECT * FROM accounts")
+          .then(rows => rows.length != 0 ? rows[0] : undefined).catch(errorHandler)
+      : login?.getRows("SELECT * FROM accounts").catch(errorHandler)
   },
 
   async updateLoginInfo(credentials) {
     if (credentials?.account && credentials.username && credentials.password)
       return login?.query(
-        "INSERT INTO accounts VALUES ($1, $2, $3) ON CONFLICT (account) DO UPDATE SET username = EXCLUDED.username, password = EXCLUDED.password", 
+        "INSERT INTO accounts (account, username, password) VALUES ($1, $2, $3) ON CONFLICT (account) DO UPDATE SET username = EXCLUDED.username, password = EXCLUDED.password", 
         [credentials.account, credentials.username, credentials.password]
-      );
+      ).catch(errorHandler);
   },
 
   async addRecords(records) {
-    const client = await gatherer?.connect();
+    if (records.length == 0)
+      return;
+
+    const client = await gatherer?.connect().catch(errorHandler);
 
     if (!client)
       return;
@@ -150,16 +158,16 @@ module.exports = {
       for (const payment of payments)
         client.query({
           name: "add-payment",
-          text: "INSERT INTO payments VALUES ($1, $2, $3, $4)",
+          text: "INSERT INTO payments (account, date, comment, amount) VALUES ($1, $2, $3, $4)",
           values: [group.account, payment.date, payment.source, payment.amount]
-        }).catch(e => console.error("[Norma PLUS] " + e));
+        }).catch(errorHandler);
   
       for (const spending of spendings)
         client.query({
           name: "add-spending",
-          text: "INSERT INTO spendings VALUES ($1, $2, $3, $4)",
+          text: "INSERT INTO spendings (account, date, comment, amount) VALUES ($1, $2, $3, $4)",
           values: [group.account, spending.date, spending.name, spending.cost]
-        }).catch(e => console.error("[Norma PLUS] " + e));
+        }).catch(errorHandler);
     }
     client.release();
   },
@@ -168,6 +176,6 @@ module.exports = {
     const sqlDays = days ? " AND NOW() - date < $2" : "";
     return user?.getRows(
       `WITH records AS (SELECT account, date, comment, -amount amount FROM spendings WHERE account = $1${sqlDays} UNION SELECT * FROM payments WHERE account = $1${sqlDays}) SELECT * FROM records ORDER BY date DESC`,
-      [account, days + " days"]);
+      [account, days + " days"]).catch(errorHandler);
   }
 };

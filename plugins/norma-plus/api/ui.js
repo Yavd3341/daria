@@ -42,17 +42,18 @@ async function buildSidebar(ctx) {
   const isMainPage = ctx.url == "/pages/norma-plus";
 
   const accounts = await db.getManagedAccounts();
-  let account = Number(ctx.query.account);
+  if (accounts?.length > 0) {
+    let account = Number(ctx.query.account);
 
-  if (!account && accounts?.length == 1)
-    account = accounts[0];
+    if (!account && accounts?.length == 1)
+      account = accounts[0];
 
-  if (isDashboard || isPluginSettings)
-    part.items.push({
-      name: "Main page",
-      url: "/pages/norma-plus"
-    });
-  
+    if (isDashboard || isPluginSettings)
+      part.items.push({
+        name: "Main page",
+        url: "/pages/norma-plus"
+      });
+    
     if (isMainPage) {
       if (!crawler.getSession(account))
         await crawler.login(account);
@@ -70,6 +71,7 @@ async function buildSidebar(ctx) {
         }
       );
     }
+  }
 
   if (ctx.url.startsWith("/settings") && !isPluginSettings || isMainPage)
     part.items.push({
