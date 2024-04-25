@@ -11,6 +11,7 @@ async function gather(accounts) {
   if (!Array.isArray(accounts))
     accounts = [accounts];
 
+  console.log(`[Norma PLUS] Gathering history...`)
   Promise.all(
     accounts.map(async account => ({
       account,
