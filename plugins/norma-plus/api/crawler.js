@@ -102,8 +102,18 @@ async function getPayments(account) {
     return undefined
 
   // Backend sends HTML snippet to be placed into container
-  // Backend sends incorrect HTML with ommited span end tag
-  const root = parse(`<body>${response.replaceAll("Баланс:", "Баланс:</span>")}</body>`, {
+
+  // Backend sends incorrect HTML with ommited end tags
+  const fixedResponse = response
+    .replaceAll("<tr", "</tr><tr")           // Add closing tr tag before each row...
+    .replaceAll("</table>", "</tr></table>") // ...and table end
+    .replaceAll("<td", "</td><td")           // Do the same for td's
+    .replaceAll("</tr>", "</td></tr>")
+    .replaceAll("Баланс:", "Баланс:</span>") // Add closing span tag for balance field
+    .replace("</tr><tr", "<tr")              // Remove first closing tr tag...
+    .replace("</td><td", "<td")              // ...and closing td tag
+
+  const root = parse(`<body>${fixedResponse}</body>`, {
     voidTag: { tags: ["script", "img"] }
   })
 
@@ -158,7 +168,7 @@ function extractPaymentInfo(table) {
       cells = rows[rowNumber].getElementsByTagName("td")
       result.payments.push({
         date: new Date(cells[0].text),
-        source: cells[1].text,
+        source: cells[1].text.trim(),
         amount: Number(cells[2].text)
       })
     }
@@ -169,15 +179,6 @@ function extractPaymentInfo(table) {
   result.spendings = []
 
   // Internet, should always be present
-  cells = rows[rowNumber++].getElementsByTagName("td")
-  if (cells[3].text) {
-    result.spendings.push({
-      name: cells[2].text.trim(),
-      cost: Number(cells[3].text)
-    })
-  }
-
-  // IPTV, should always be present, but may be empty
   cells = rows[rowNumber++].getElementsByTagName("td")
   if (cells[3].text) {
     result.spendings.push({
