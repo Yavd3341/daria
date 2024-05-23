@@ -71,15 +71,13 @@ th, td {
 
 .difference.money {
   color: var(--col-red);
-  font-size: smaller;
-  margin-left: 1em;
 }
 
-.difference[data-value^="-"].money {
+.difference[data-value^="-"] {
   color: var(--col-green);
 }
 
-.difference[data-value^="-"].money::before {
+.difference[data-value^="-"]::before {
   content: none;
 }
 
@@ -91,6 +89,10 @@ th, td {
 .negative#balance {
   background-color: var(--col-red);
   color: var(--col-fg-inversed);
+}
+
+.table h1 {
+  margin-bottom: 16px;
 }
 
 @media screen and (max-width: 600px) {

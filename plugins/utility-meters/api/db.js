@@ -206,8 +206,8 @@ module.exports = {
     if (id) {
       data.push(id)
       sqlWhereId = isGroupId
-        ? `WHERE meter = $${data.length}`
-        : `WHERE meter IN (SELECT meter_id FROM group_links WHERE group_id = $${data.length})`
+        ? `WHERE meter IN (SELECT meter_id FROM group_links WHERE group_id = $${data.length})`
+        : `WHERE meter = $${data.length}`
     }
 
     let sqlWhereMonths = ""
@@ -247,10 +247,10 @@ module.exports = {
     let sqlWhereMonths = ""
     if (maxMonths) {
       data.push(maxMonths + " MONTHS")
-      sqlWhereMonths = `WHERE NOW() - date < $${data.length}`
+      sqlWhereMonths = `AND NOW() - date < $${data.length}`
     }
 
-    return guest?.query(`WITH log AS (SELECT DATE_TRUNC('month', date - '1 WEEK'::INTERVAL) date, difference, cost FROM meter_log_full LEFT JOIN meters ON meters.id = meter ${sqlWhereId}), summary AS (SELECT date, SUM(difference)::INT sum, SUM(cost)::INT cost FROM log GROUP BY date) SELECT date, sum, sum - LAG(sum, 1) OVER win difference, cost, cost - LAG(cost, 1) OVER win cost_difference FROM summary ${sqlWhereMonths} WINDOW win AS (ORDER BY date) ORDER BY date DESC`, data)
+    return guest?.query(`WITH log AS (SELECT DATE_TRUNC('month', date - '1 WEEK'::INTERVAL) date, difference, cost FROM meter_log_full LEFT JOIN meters ON meters.id = meter ${sqlWhereId}), summary AS (SELECT date, SUM(difference)::INT sum, SUM(cost)::INT cost FROM log GROUP BY date) SELECT date, sum, sum - LAG(sum, 1) OVER win difference, cost, cost - LAG(cost, 1) OVER win cost_difference FROM summary WHERE sum IS NOT NULL ${sqlWhereMonths} WINDOW win AS (ORDER BY date) ORDER BY date DESC`, data)
       .then(response => response.rows).catch(errorHandler)
   },
 };

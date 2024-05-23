@@ -6,9 +6,6 @@ const SETTINGS_PAGE = SETTINGS_TREE + "/utility-meters"
 const SETTINGS_METERS_PAGE = SETTINGS_PAGE + "/meters"
 const SETTINGS_TARIFFS_PAGE = SETTINGS_PAGE + "/tariffs"
 const SETTINGS_GROUPS_PAGE = SETTINGS_PAGE + "/groups"
-const GROUP_PAGE = MAIN_PAGE + "/group/"
-const METER_PAGE = MAIN_PAGE + "/meter/"
-const TARIFF_PAGE = MAIN_PAGE + "/tariff/"
 
 async function buildCards(ctx) {
   if (ctx.url == MAIN_PAGE)
@@ -36,7 +33,7 @@ async function buildSidebar(ctx) {
     items: []
   };
 
-  if (ctx.url != MAIN_PAGE)
+  if (ctx.url != MAIN_PAGE || ctx.query.group || ctx.query.meter || ctx.query.tariff)
     part.items.push({
       name: "Main page",
       url: MAIN_PAGE
@@ -89,21 +86,14 @@ async function buildSidebarGroups(ctx) {
   if (!(groups?.length > 0))
     return;
 
-  let id = undefined
-  if (ctx.url.startsWith(GROUP_PAGE)) {
-    try {
-      id = Number.parseInt(ctx.url.slice(GROUP_PAGE.length).split("/", 1)[0])
-    }
-    catch {}
-  }
-
+  const groupId = Number(ctx.query.group);
   return part = {
     name: "Meter groups",
     items: groups.reduce((items, group) => {
-      if (group.id != id)
+      if (group.id != groupId)
         items.push({
           name: group.comment,
-          url: GROUP_PAGE + group.id
+          url: MAIN_PAGE + "?group=" + group.id
         })
       return items
     }, [])
@@ -111,35 +101,129 @@ async function buildSidebarGroups(ctx) {
 }
 
 module.exports = (ctx, config) => {
-  const uiManager = ctx.pluginManager.getPlugin("ui");
+  const uiManager = ctx.pluginManager.getPlugin("ui")
 
-  uiManager.addCardsBuilder(buildCards);
-  uiManager.addSidebarBuilder(buildSidebar);
-  uiManager.addSidebarBuilder(buildSidebarGroups);
+  uiManager.addCardsBuilder(buildCards)
+  uiManager.addSidebarBuilder(buildSidebar)
+  uiManager.addSidebarBuilder(buildSidebarGroups)
 
-  uiManager.addDataProvider(MAIN_PAGE, async ctx => [
-    {
-      type: "heading"
-    },
-    {
-      type: "graph",
-      data: await db.getMeterLogCostGraph(undefined, 12),
-      fields: [
+  uiManager.addDataProvider(MAIN_PAGE, async ctx => {
+    if (ctx.query.meter) {
+      const meterId = Number(ctx.query.meter)
+      const meter = await db.getMeters(meterId)
+
+      if (meter && meter.length > 0)
+        return [
+          {
+            type: "heading",
+            title: `meter "${meter[0].comment}"`
+          },
+          {
+            type: "graph",
+            data: await db.getMeterLogWithTariff(meterId, 12),
+            fields: [
+              {
+                name: "Readings",
+                field: "reading"
+              },
+              {
+                name: "Cost",
+                field: "cost",
+                type: "money"
+              },
+              {
+                name: "Readings difference",
+                field: "difference"
+              },
+              {
+                name: "Cost difference",
+                field: "cost_difference",
+                type: "money"
+              }
+            ]
+          },
+          {
+            type: "table",
+            data: await db.getMeterLogWithTariff(meterId, 12)
+          }
+        ]
+    }
+    else if (ctx.query.group) {
+      const groupId = Number(ctx.query.group)
+      const group = await db.getGroups(groupId)
+
+      if (group && group.length > 0)
+        return [
+          {
+            type: "heading",
+            title: `group "${group[0].comment}"`
+          },
+          {
+            type: "graph",
+            data: await db.getMeterLogCostGraph(groupId, 12),
+            fields: [
+              {
+                name: "Readings",
+                field: "sum"
+              },
+              {
+                name: "Cost",
+                field: "cost",
+                type: "money"
+              },
+              {
+                name: "Readings difference",
+                field: "difference"
+              },
+              {
+                name: "Cost difference",
+                field: "cost_difference",
+                type: "money"
+              }
+            ]
+          },
+          {
+            type: "table",
+            title: "Meters",
+            data: await db.getCurrentMeterInfo(groupId, true, 1)
+          },
+          {
+            type: "table",
+            title: "Log",
+            data: await db.getMeterLogCostGraph(groupId, 12)
+          }
+        ]
+    }
+    else if (ctx.query.tariff) {
+      
+    }
+    else {
+      return [
         {
-          name: "Cost",
-          field: "cost",
-          type: "money"
+          type: "heading"
         },
         {
-          name: "Cost difference",
-          field: "cost_difference",
-          type: "money"
+          type: "graph",
+          data: await db.getMeterLogCostGraph(undefined, 12),
+          fields: [
+            {
+              name: "Cost",
+              field: "cost",
+              type: "money"
+            },
+            {
+              name: "Cost difference",
+              field: "cost_difference",
+              type: "money"
+            }
+          ]
+        },
+        {
+          type: "table",
+          title: "Meters",
+          data: await db.getCurrentMeterInfo(undefined, false, 1)
         }
       ]
-    },
-    {
-      type: "table",
-      data: await db.getCurrentMeterInfo(undefined, false, 1)
     }
-  ]);
+  })
 }

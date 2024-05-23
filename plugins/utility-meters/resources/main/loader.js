@@ -83,7 +83,7 @@ daria.builders["graph"] = (fragment, ctx) => {
       .addEventListener("change", updateColors)
     updateColors()
 
-    let counter = ctx.fields.length
+    let counter = -1
     changeGraphBtn.onclick = () => {
       counter = ++counter % ctx.fields.length
 
@@ -113,6 +113,7 @@ daria.builders["table"] = (fragment, ctx) => {
   }
 
   let onlyDates = true
+  let noTariff = true
   for (const entry of ctx.data) {
     const row = document.createElement("tr")
 
@@ -133,7 +134,7 @@ daria.builders["table"] = (fragment, ctx) => {
 
       if (entry.meter) {
         const link = document.createElement("a")
-        link.href = "meter/" + entry.meter
+        link.href = "?meter=" + entry.meter
         link.innerText = cell.innerText
         cell.removeChild(cell.lastChild)
         cell.appendChild(link)
@@ -144,7 +145,9 @@ daria.builders["table"] = (fragment, ctx) => {
 
     {
       const cell = document.createElement("td")
-      cell.innerText = entry.reading
+      cell.innerText = entry.reading == undefined
+        ? entry.sum
+        : entry.reading
 
       if (entry.difference) {
         const diffSpan = document.createElement("span")
@@ -161,13 +164,16 @@ daria.builders["table"] = (fragment, ctx) => {
       const cell = document.createElement("td")
       cell.innerText = (entry.tariff / 100).toLocaleString("uk-UA",{style:"currency", currency:"UAH"})
       row.appendChild(cell)
+      noTariff = false
     }
 
     {
       const cell = document.createElement("td")
 
       const span = document.createElement("span")
-      span.innerText = (entry.cost / 100).toLocaleString("uk-UA",{style:"currency", currency:"UAH"})
+      span.innerText = entry.cost != null
+        ? (entry.cost / 100).toLocaleString("uk-UA",{style:"currency", currency:"UAH"})
+        : "N/A"
       cell.appendChild(span)
 
       if (entry.cost_difference) {
@@ -184,6 +190,16 @@ daria.builders["table"] = (fragment, ctx) => {
     table.appendChild(row)
   }
 
+  const headRow = fragment.getElementById("head-row")
   if (!onlyDates)
-    fragment.getElementById("head-row").children[0].innerText = "Comment"
+    headRow.children[0].innerText = "Comment"
+
+  if (noTariff)
+    headRow.removeChild(headRow.children[2])
+
+  const heading = fragment.getElementById("heading")
+  if (ctx.title)
+    heading.innerText = ctx.title
+  else
+    heading.parentElement.removeChild(heading)
 }
