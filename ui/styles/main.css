@@ -304,3 +304,7 @@ td {
 
   border-bottom: 1px solid var(--col-accent);
 }
+
+.menu-container .card a {
+  height: auto;
+}
