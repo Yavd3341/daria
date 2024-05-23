@@ -67,7 +67,7 @@ daria.builders["main"] = (card, ctx) => {
 
   // Current balance
   const balance = card.getElementById("balance");
-  balance.innerText = ctx.balance;
+  balance.innerText = ctx.balance.toLocaleString("uk-UA",{style:"currency", currency:"UAH"});
 
   const balanceMonths = Math.floor(ctx.balance / costSum);
   const auxInfo = card.getElementById("aux");
@@ -107,7 +107,7 @@ daria.builders["main"] = (card, ctx) => {
     row.appendChild(cell);
 
     cell = document.createElement("td");
-    cell.innerText = amount;
+    cell.innerText = amount.toLocaleString("uk-UA",{style:"currency", currency:"UAH"});
     cell.classList.add("money");
     if (amount < 0) cell.classList.add("negative");
     row.appendChild(cell);

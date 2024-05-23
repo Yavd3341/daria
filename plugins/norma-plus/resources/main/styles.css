@@ -93,11 +93,6 @@ th,
   text-align: center;
 }
 
-.money::after {
-  content: "₴";
-  margin-left: 0.2em;
-}
-
 .money.negative {
   color: var(--col-red);
 }
