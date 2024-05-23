@@ -14,7 +14,8 @@ async function buildCards(ctx) {
         "https://cdn.jsdelivr.net/npm/chart.js",
         "https://cdn.jsdelivr.net/npm/luxon",
         "https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon",
-        "/plugins/utility-meters/main/loader.js"
+        "/plugins/utility-meters/main/loader-graph.js",
+        "/plugins/utility-meters/main/loader-meters.js"
       ],
       styles: [
         "/plugins/utility-meters/main/styles.css"
@@ -22,7 +23,7 @@ async function buildCards(ctx) {
       templates: {
         "heading": "utility-meters/main/heading.html",
         "graph": "utility-meters/main/graph.html",
-        "table": "utility-meters/main/table.html"
+        "table": "utility-meters/main/table-meters.html"
       }
     };
 }
