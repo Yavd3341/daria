@@ -47,19 +47,19 @@ function makeEndpoints() {
     {
       const newCredentials = ctx.json.credentials;
       if (newCredentials) {
-        if (newCredentials.login.password)
+        if (newCredentials.login?.password)
           config.credentials.login = {
             user: newCredentials.login.user,
             password: newCredentials.login.password
           };
 
-        if (newCredentials.gatherer.password)
+        if (newCredentials.gatherer?.password)
           config.credentials.gatherer = {
             user: newCredentials.gatherer.user,
             password: newCredentials.gatherer.password
           };
 
-        if (newCredentials.user.password)
+        if (newCredentials.user?.password)
           config.credentials.user = {
             user: newCredentials.user.user,
             password: newCredentials.user.password

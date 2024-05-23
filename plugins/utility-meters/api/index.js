@@ -78,6 +78,58 @@ function makeEndpoints() {
   router.get("/meters/graph", async ctx => ctx.body = await db.getMeterLogCostGraph(undefined, ctx.query.months) || [])
   router.get("/group/:id/graph", async ctx => ctx.body = await db.getMeterLogCostGraph(ctx.params.id, ctx.query.months) || [])
 
+  router.post("/settings", async ctx => {
+    const backup = {
+      database: structuredClone(config.database),
+      credentials: structuredClone(config.credentials)
+    }
+
+    {
+      const newConfig = ctx.json.database
+      if (newConfig)
+        config.database = {
+          host: newConfig.host || undefined,
+          port: newConfig.host ? newConfig.port : undefined,
+          database: newConfig.database
+        }
+    }
+
+    {
+      const newCredentials = ctx.json.credentials
+      if (newCredentials) {
+        if (newCredentials.admin?.password)
+          config.credentials.admin = {
+            user: newCredentials.admin.user,
+            password: newCredentials.admin.password
+          }
+
+        if (newCredentials.gatherer?.password)
+          config.credentials.gatherer = {
+            user: newCredentials.gatherer.user,
+            password: newCredentials.gatherer.password
+          }
+
+        if (newCredentials.guest?.password)
+          config.credentials.guest = {
+            user: newCredentials.guest.user,
+            password: newCredentials.guest.password
+          }
+      }
+    }
+
+    if (await db.tryConnect()) {
+      config.save()
+      ctx.status = 200
+    }
+    else {
+      config.database = backup.database
+      config.credentials = backup.credentials
+      db.tryConnect()
+
+      ctx.status = 400
+    }
+  })
+
   return router
 }
 

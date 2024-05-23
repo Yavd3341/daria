@@ -1,0 +1,75 @@
+h2 {
+  width: 100%;
+  margin-top: 0;
+}
+
+#accountEdit {
+  height: min-content;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  width: 300px;
+}
+
+.red {
+  --col-shadow: var(--col-red);
+  --col-accent: var(--col-red);
+  --col-accent-dark: var(--col-red-dark);
+}
+
+.line,
+td:last-child {
+  display: flex;
+  gap: 0 calc(var(--content-spacing) / 2);
+  align-items: baseline;
+}
+
+.line {
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+#table {
+  flex-grow: 1;
+  height: min-content;
+  min-width: min-content;
+}
+
+table button {
+  padding: 0.35em 0.45em;
+  width: auto;
+  display: initial;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.session {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+th:last-child {
+  width: 1px;
+}
+
+.label-like,
+label {
+  display: block;
+  margin-bottom: 0.5em;
+  flex-grow: 1;
+}
+
+#delete {
+  margin-left: auto;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--col-accent);
+}
+
+@media screen and (max-width: 600px) {
+  #accountEdit {
+    position: unset;
+    width: 100%;
+    flex-grow: 1;
+  }
+}

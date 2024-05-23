@@ -36,6 +36,26 @@ async function buildCards(ctx) {
 
     return page
   }
+  else if (ctx.url.startsWith(SETTINGS_PAGE)) {
+    const page =  {
+      scripts: [
+        "/plugins/utility-meters/settings/loader.js"
+      ],
+      styles: [
+        "/plugins/utility-meters/main/styles.css",
+        "/plugins/utility-meters/settings/styles.css"
+      ]
+    }
+
+    if (ctx.url == SETTINGS_PAGE) {
+      page.scripts = ["/plugins/utility-meters/settings/loader-database.js"]
+      page.templates = {
+        editor: "utility-meters/settings/editor-database.html"
+      }
+    }
+
+    return page
+  }
 }
 
 async function buildSidebar(ctx) {
@@ -272,4 +292,14 @@ module.exports = (ctx, config) => {
       ]
     }
   })
+
+  uiManager.addDataProvider(SETTINGS_PAGE, async ctx => [{
+    type: "editor",
+    database: config.database,
+    users: {
+      admin: config.credentials.admin?.user,
+      gatherer: config.credentials.gatherer?.user,
+      guest: config.credentials.guest?.user
+    }
+  }])
 }

@@ -1,0 +1,58 @@
+<form id="settingsForm" class="card">
+  <h1>Utility meters database settings</h1>
+
+  <div class="line">
+    <label>
+      <b>Host</b>
+      <input id="host" type="text" placeholder="Use default host" name="host">
+    </label>
+
+    <label>
+      <b>Port</b>
+      <input id="port" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Use default port" name="port">
+    </label>
+
+    <label>
+      <b>Database</b>
+      <input id="database" type="text" placeholder="Enter database" name="database" required>
+    </label>
+  </div>
+
+  <div id="adminUser" class="line">
+    <label>
+      <b>Admin user username</b>
+      <input type="text" placeholder="Enter username" name="username" required>
+    </label>
+
+    <label>
+      <b>Admin user password</b>
+      <input type="password" placeholder="Enter new password" name="password">
+    </label>
+  </div>
+
+  <div id="gathererUser" class="line">
+    <label>
+      <b>Gatherer username</b>
+      <input type="text" placeholder="Enter username" name="username" required>
+    </label>
+
+    <label>
+      <b>Gatherer password</b>
+      <input type="password" placeholder="Enter new password" name="password">
+    </label>
+  </div>
+
+  <div id="guestUser" class="line">
+    <label>
+      <b>Guest username</b>
+      <input type="text" placeholder="Enter username" name="username" required>
+    </label>
+
+    <label>
+      <b>Guest password</b>
+      <input type="password" placeholder="Enter new password" name="password">
+    </label>
+  </div>
+
+  <button id="submit" type="submit">Save</button>
+</form>
