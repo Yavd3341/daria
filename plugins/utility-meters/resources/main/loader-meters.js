@@ -25,10 +25,10 @@ daria.builders["table"] = (fragment, ctx) => {
       }
       else {
         const date = new Date(entry.date)
-        const isDateOnly = date.getHours() == 0 && date.getMinutes() == 0 && date.getSeconds() == 0;
+        const isDateOnly = date.getHours() == 0 && date.getMinutes() == 0 && date.getSeconds() == 0
         cell.innerText = date.toLocaleDateString(undefined, options) + (!isDateOnly 
           ? "<br/>" + date.toLocaleTimeString()
-          : "");
+          : "")
       }
 
       if (entry.meter) {

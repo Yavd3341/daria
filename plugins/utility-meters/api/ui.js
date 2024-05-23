@@ -1,4 +1,4 @@
-const db = require("./db");
+const db = require("./db")
 
 const MAIN_PAGE = "/pages/utility-meters"
 const SETTINGS_TREE = "/settings"
@@ -32,27 +32,27 @@ async function buildSidebar(ctx) {
   const part = {
     name: "Utility meters",
     items: []
-  };
+  }
 
   if (ctx.url != MAIN_PAGE || ctx.query.group || ctx.query.meter || ctx.query.tariff)
     part.items.push({
       name: "Main page",
       url: MAIN_PAGE
-    });
+    })
 
   const isSettingsTree = ctx.url.startsWith(SETTINGS_TREE) 
   if (ctx.url != SETTINGS_PAGE)
     part.items.push({
       name: isSettingsTree ? "General" : "Settings",
       url: SETTINGS_PAGE
-    });
+    })
 
   if (ctx.url.startsWith(MAIN_PAGE)) {
     if (ctx.url != SETTINGS_METERS_PAGE)
       part.items.push({
         name: "Add readings",
         url: SETTINGS_METERS_PAGE
-      });
+      })
   }
 
   if (isSettingsTree) {
@@ -60,34 +60,34 @@ async function buildSidebar(ctx) {
       part.items.push({
         name: "Meters",
         url: SETTINGS_METERS_PAGE
-      });
+      })
   
     if (ctx.url != SETTINGS_GROUPS_PAGE)
       part.items.push({
         name: "Groups",
         url: SETTINGS_GROUPS_PAGE
-      });
+      })
   
     if (ctx.url != SETTINGS_TARIFFS_PAGE)
       part.items.push({
         name: "Tariffs",
         url: SETTINGS_TARIFFS_PAGE
-      });
+      })
   }
 
-  return part;
+  return part
 }
 
 async function buildSidebarGroups(ctx) {
   if (!ctx.url.startsWith(MAIN_PAGE))
-    return;
+    return
 
-  const groups = await db.getGroups();
+  const groups = await db.getGroups()
 
   if (!(groups?.length > 0))
-    return;
+    return
 
-  const groupId = Number(ctx.query.group);
+  const groupId = Number(ctx.query.group)
   return part = {
     name: "Meter groups",
     items: groups.reduce((items, group) => {
@@ -98,7 +98,7 @@ async function buildSidebarGroups(ctx) {
         })
       return items
     }, [])
-  };
+  }
 }
 
 module.exports = (ctx, config) => {

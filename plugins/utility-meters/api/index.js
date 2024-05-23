@@ -1,12 +1,12 @@
-const db = require("./db");
-var config = undefined;
+const db = require("./db")
+var config = undefined
 
-const Router = require("@koa/router");
+const Router = require("@koa/router")
 
 function makeEndpoints() {
-  const router = new Router();
+  const router = new Router()
 
-  router.prefix("/utility-meters");
+  router.prefix("/utility-meters")
 
   router.safeGet = (path, data) => router.get(path, async ctx => ctx.body = await data(ctx) || [])
   router.safeGet = (path, data) => router.get(path, async ctx => ctx.body = await data(ctx) || [])
@@ -78,12 +78,12 @@ function makeEndpoints() {
   router.get("/meters/graph", async ctx => ctx.body = await db.getMeterLogCostGraph(undefined, ctx.query.months) || [])
   router.get("/group/:id/graph", async ctx => ctx.body = await db.getMeterLogCostGraph(ctx.params.id, ctx.query.months) || [])
 
-  return router;
+  return router
 }
 
 module.exports = {
   init(ctx) {
-    ctx.router = makeEndpoints();
+    ctx.router = makeEndpoints()
 
     const defaultConfig = {
       database: {},
@@ -101,14 +101,14 @@ module.exports = {
           password: "changeme"
         }
       }
-    };
+    }
 
-    const configManager = ctx.pluginManager.getPlugin("storage-mgr");
-    config = configManager.getStorage("utility-meters", defaultConfig);
-    config.load();
+    const configManager = ctx.pluginManager.getPlugin("storage-mgr")
+    config = configManager.getStorage("utility-meters", defaultConfig)
+    config.load()
 
-    db.init(ctx.pluginManager.getPlugin("postgresql"), config, ctx.eventBus);
+    db.init(ctx.pluginManager.getPlugin("postgresql"), config, ctx.eventBus)
 
-    require("./ui")(ctx, config);
+    require("./ui")(ctx, config)
   }
-};
+}
