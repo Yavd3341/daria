@@ -1,0 +1,7 @@
+{
+  "id": "utility-meters",
+  "name": "Utility meters plugin",
+  "author": "Yavd",
+  "version": "internal-dev",
+  "dependencies": [ "ui", "storage-mgr", "postgresql" ]
+}
