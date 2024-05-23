@@ -1,3 +1,8 @@
+daria.builders["heading"] = (fragment, ctx) => {
+  if (ctx.title)
+    fragment.getElementById("heading").innerText += ": " + ctx.title
+}
+
 daria.builders["graph"] = (fragment, ctx) => {
   const canvas = fragment.getElementById("canvas")
   const changeGraphBtn = fragment.getElementById("change-graph")

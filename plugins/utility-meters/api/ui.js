@@ -8,24 +8,34 @@ const SETTINGS_TARIFFS_PAGE = SETTINGS_PAGE + "/tariffs"
 const SETTINGS_GROUPS_PAGE = SETTINGS_PAGE + "/groups"
 
 async function buildCards(ctx) {
-  if (ctx.url == MAIN_PAGE)
-    return {
+  if (ctx.url == MAIN_PAGE) {
+    const page =  {
       scripts: [
         "https://cdn.jsdelivr.net/npm/chart.js",
         "https://cdn.jsdelivr.net/npm/luxon",
         "https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon",
-        "/plugins/utility-meters/main/loader-graph.js",
-        "/plugins/utility-meters/main/loader-meters.js"
+        "/plugins/utility-meters/main/loader-common.js"
       ],
       styles: [
         "/plugins/utility-meters/main/styles.css"
       ],
       templates: {
         "heading": "utility-meters/main/heading.html",
-        "graph": "utility-meters/main/graph.html",
-        "table": "utility-meters/main/table-meters.html"
+        "graph": "utility-meters/main/graph.html"
       }
-    };
+    }
+
+    if (ctx.query.tariff) {
+      page.scripts.push("/plugins/utility-meters/main/loader-tariffs.js")
+      page.templates["table"] = "utility-meters/main/table-common.html"
+    }
+    else {
+      page.scripts.push("/plugins/utility-meters/main/loader-meters.js")
+      page.templates["table"] = "utility-meters/main/table-meters.html"
+    }
+
+    return page
+  }
 }
 
 async function buildSidebar(ctx) {
@@ -113,7 +123,8 @@ module.exports = (ctx, config) => {
       const meterId = Number(ctx.query.meter)
       const meter = await db.getMeters(meterId)
 
-      if (meter && meter.length > 0)
+      if (meter && meter.length > 0) {
+        const data = await db.getMeterLogWithTariff(meterId, 12)
         return [
           {
             type: "heading",
@@ -121,7 +132,7 @@ module.exports = (ctx, config) => {
           },
           {
             type: "graph",
-            data: await db.getMeterLogWithTariff(meterId, 12),
+            data: data,
             fields: [
               {
                 name: "Readings",
@@ -145,15 +156,17 @@ module.exports = (ctx, config) => {
           },
           {
             type: "table",
-            data: await db.getMeterLogWithTariff(meterId, 12)
+            data: data
           }
         ]
+      }
     }
     else if (ctx.query.group) {
       const groupId = Number(ctx.query.group)
       const group = await db.getGroups(groupId)
 
-      if (group && group.length > 0)
+      if (group && group.length > 0) {
+        const data = await db.getMeterLogCostGraph(groupId, 12)
         return [
           {
             type: "heading",
@@ -161,7 +174,7 @@ module.exports = (ctx, config) => {
           },
           {
             type: "graph",
-            data: await db.getMeterLogCostGraph(groupId, 12),
+            data: data,
             fields: [
               {
                 name: "Readings",
@@ -191,12 +204,44 @@ module.exports = (ctx, config) => {
           {
             type: "table",
             title: "Log",
-            data: await db.getMeterLogCostGraph(groupId, 12)
+            data: data
           }
         ]
+      }
     }
     else if (ctx.query.tariff) {
-      
+      const tariffId = Number(ctx.query.tariff)
+      const tariff = await db.getTariffs(tariffId)
+
+      if (tariff && tariff.length > 0) {
+        const data = await db.getTariffHistory(tariffId)
+        const page = [
+          {
+            type: "heading",
+            title: `tariff "${tariff[0].comment}"`
+          },
+          {
+            type: "table",
+            data: data
+          }
+        ]
+
+        if (data && data.length > 1) {
+          page.splice(2, 0, {
+            type: "graph",
+            data: await db.getMeterLogCostGraph(tariffId, 12),
+            fields: [
+              {
+                name: "Price",
+                field: "value",
+                type: "money"
+              }
+            ]
+          })
+        }
+
+        return page
+      }
     }
     else {
       return [

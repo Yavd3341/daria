@@ -25,30 +25,6 @@ canvas {
   display: flex;
 }
 
-.costs table {
-  text-align: left;
-}
-
-.costs td {
-  padding: 0.25em 0;
-  vertical-align: top;
-  border: none;
-}
-
-.costs tr {
-  border: none;
-}
-
-.costs tbody tr:last-child td {
-  padding-bottom: 0.75em;
-  border-bottom: var(--col-accent) 2px solid;
-}
-
-.costs tfoot td {
-  padding-top: 0.75em;
-  font-weight: bold;
-}
-
 th:first-child,
 td:first-child {
   min-width: 50%;
@@ -79,16 +55,6 @@ th, td {
 
 .difference[data-value^="-"]::before {
   content: none;
-}
-
-.warning#balance {
-  background-color: var(--col-yellow);
-  color: var(--col-fg-inversed);
-}
-
-.negative#balance {
-  background-color: var(--col-red);
-  color: var(--col-fg-inversed);
 }
 
 .table h1 {

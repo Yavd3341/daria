@@ -1,8 +1,3 @@
-daria.builders["heading"] = (fragment, ctx) => {
-  if (ctx.title)
-    fragment.getElementById("heading").innerText += ": " + ctx.title
-}
-
 daria.builders["table"] = (fragment, ctx) => {
   const table = fragment.getElementById("table")
   const options = {
@@ -23,13 +18,8 @@ daria.builders["table"] = (fragment, ctx) => {
         cell.innerText = entry.comment
         onlyDates = false
       }
-      else {
-        const date = new Date(entry.date)
-        const isDateOnly = date.getHours() == 0 && date.getMinutes() == 0 && date.getSeconds() == 0
-        cell.innerText = date.toLocaleDateString(undefined, options) + (!isDateOnly 
-          ? "<br/>" + date.toLocaleTimeString()
-          : "")
-      }
+      else
+        cell.innerText = new Date(entry.date).toLocaleDateString(undefined, options)
 
       if (entry.meter) {
         const link = document.createElement("a")
