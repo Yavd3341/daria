@@ -205,7 +205,7 @@ module.exports = {
         ? "WHERE meter = $1"
         : "WHERE meter IN (SELECT meter_id FROM group_links WHERE group_id = $1)"
       : ""
-    return guest?.query(`WITH log AS (SELECT DISTINCT ON (meter) meter, value, value - LAG(value, 1) OVER (PARTITION BY meter ORDER BY date) difference  FROM meter_log ORDER BY meter, date DESC), tariffs AS (SELECT DISTINCT (tariff) tariff, value, date FROM tariff_history ORDER BY date DESC) SELECT comment, log.value reading, difference, tariffs.value tariff, difference * tariffs.value cost FROM meters LEFT JOIN tariffs ON tariffs.tariff = meters.tariff LEFT JOIN log ON log.meter = meters.id ${sqlWhereId}`, id ? [id] : [])
+    return guest?.query(`SELECT DISTINCT ON (meter) date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full ${sqlWhereId} ORDER BY meter, date DESC`, id ? [id] : [])
       .then(response => response.rows).catch(errorHandler)
   },
 
@@ -217,10 +217,11 @@ module.exports = {
 
   async getMeterLogWithTariff(id, maxMonths) {
     const sqlWhereMonths = maxMonths 
-      ? "WHERE NOW() - date < $2"
+      ? "AND NOW() - date < $2"
       : ""
-    return guest?.query(`WITH log AS (SELECT date, value, value - LAG(value, 1) OVER (PARTITION BY meter ORDER BY date) difference, (SELECT value FROM tariff_history WHERE tariff_history.tariff = meters.tariff AND tariff_history.date < meter_log.date ORDER BY date DESC LIMIT 1) tariff FROM meter_log LEFT JOIN meters ON meters.id = meter_log.meter WHERE meter = $1 ORDER BY date DESC) SELECT date, value reading, difference, tariff, difference * tariff cost FROM log ${sqlWhereMonths}`, maxMonths ? [id, maxMonths + "MONTHS"] : [id])
-      .then(response => response.rows).catch(errorHandler)
+    return guest?.query(`SELECT date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full WHERE meter = $1 ${sqlWhereMonths} ORDER BY date DESC`,
+      maxMonths ? [id, maxMonths + "MONTHS"] : [id])
+        .then(response => response.rows).catch(errorHandler)
   },
 
   async getMeterLogCostGraph(groupId, maxMonths) {
@@ -238,7 +239,7 @@ module.exports = {
       sqlWhereMonths = `WHERE NOW() - date < $${data.length})`
     }
 
-    return guest?.query(`WITH log AS (SELECT DATE_TRUNC('month', date - '1 WEEK'::INTERVAL) date, (value - LAG(value, 1) OVER (PARTITION BY meter ORDER BY date)) * (SELECT value FROM tariff_history WHERE tariff_history.tariff = meters.tariff AND tariff_history.date < meter_log.date ORDER BY date DESC LIMIT 1) cost FROM meter_log LEFT JOIN meters ON meters.id = meter_log.meter ${sqlWhereId}) SELECT date, SUM(cost) cost FROM log GROUP BY date ${sqlWhereMonths} ORDER BY date DESC`, data)
+    return guest?.query(`WITH log AS (SELECT DATE_TRUNC('month', date - '1 WEEK'::INTERVAL) date, cost FROM meter_log_full LEFT JOIN meters ON meters.id = meter ${sqlWhereId}) SELECT date, SUM(cost)::INT cost FROM log GROUP BY date ${sqlWhereMonths} ORDER BY date DESC`, data)
       .then(response => response.rows).catch(errorHandler)
   },
 };
