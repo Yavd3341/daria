@@ -1,0 +1,106 @@
+:root {
+  --col-green: forestgreen;
+}
+
+canvas {
+  max-height: 256px;
+  margin-bottom: 1em;
+}
+
+.card:has(#balance) {
+  text-align: center;
+}
+
+#change-graph {
+  box-sizing: border-box;
+  margin-left: auto;
+  display: inline-block;
+  padding: 0.5em 0.75em;
+  font-size: initial;
+  width: auto;
+  cursor: pointer;
+}
+
+#graph-heading {
+  display: flex;
+}
+
+.costs table {
+  text-align: left;
+}
+
+.costs td {
+  padding: 0.25em 0;
+  vertical-align: top;
+  border: none;
+}
+
+.costs tr {
+  border: none;
+}
+
+.costs tbody tr:last-child td {
+  padding-bottom: 0.75em;
+  border-bottom: var(--col-accent) 2px solid;
+}
+
+.costs tfoot td {
+  padding-top: 0.75em;
+  font-weight: bold;
+}
+
+th:first-child,
+td:first-child {
+  min-width: 50%;
+  text-align: left;
+}
+
+th, td {
+  padding: calc(var(--content-spacing) / 1.5);
+  text-align: center;
+}
+
+.difference {
+  font-size: smaller;
+  margin-left: 0.5em;
+}
+
+.difference::before {
+  content: "+";
+}
+
+.difference.money {
+  color: var(--col-red);
+  font-size: smaller;
+  margin-left: 1em;
+}
+
+.difference[data-value^="-"].money {
+  color: var(--col-green);
+}
+
+.difference[data-value^="-"].money::before {
+  content: none;
+}
+
+.warning#balance {
+  background-color: var(--col-yellow);
+  color: var(--col-fg-inversed);
+}
+
+.negative#balance {
+  background-color: var(--col-red);
+  color: var(--col-fg-inversed);
+}
+
+@media screen and (max-width: 600px) {
+  .card {
+    min-width: fit-content;
+    width: 100%;
+  }
+
+  th,
+  #log td {
+    padding: calc(var(--content-spacing) / 2);
+  }
+}
