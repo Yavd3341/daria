@@ -199,13 +199,24 @@ module.exports = {
 
   // Extra requests
 
-  async getCurrentMeterInfo(id, isGroupId = false) {
-    const sqlWhereId = id 
-      ? isGroupId
-        ? "WHERE meter = $1"
-        : "WHERE meter IN (SELECT meter_id FROM group_links WHERE group_id = $1)"
-      : ""
-    return guest?.query(`SELECT DISTINCT ON (meter) date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full ${sqlWhereId} ORDER BY meter, date DESC`, id ? [id] : [])
+  async getCurrentMeterInfo(id, isGroupId = false, maxMonths = undefined) {
+    let data = []
+
+    let sqlWhereId = ""
+    if (id) {
+      data.push(id)
+      sqlWhereId = isGroupId
+        ? `WHERE meter = $${data.length}`
+        : `WHERE meter IN (SELECT meter_id FROM group_links WHERE group_id = $${data.length})`
+    }
+
+    let sqlWhereMonths = ""
+    if (maxMonths) {
+      data.push(maxMonths + " MONTHS")
+      sqlWhereMonths = `WHERE NOW() - date < $${data.length}`
+    }
+    
+    return guest?.query(`WITH last AS (SELECT DISTINCT ON (meter) meter, date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full ${sqlWhereId} ORDER BY meter, date DESC) SELECT comment, last.* FROM last LEFT JOIN meters ON meter = id ${sqlWhereMonths}`, data)
       .then(response => response.rows).catch(errorHandler)
   },
 
@@ -236,10 +247,10 @@ module.exports = {
     let sqlWhereMonths = ""
     if (maxMonths) {
       data.push(maxMonths + " MONTHS")
-      sqlWhereMonths = `WHERE NOW() - date < $${data.length})`
+      sqlWhereMonths = `WHERE NOW() - date < $${data.length}`
     }
 
-    return guest?.query(`WITH log AS (SELECT DATE_TRUNC('month', date - '1 WEEK'::INTERVAL) date, cost FROM meter_log_full LEFT JOIN meters ON meters.id = meter ${sqlWhereId}) SELECT date, SUM(cost)::INT cost FROM log GROUP BY date ${sqlWhereMonths} ORDER BY date DESC`, data)
+    return guest?.query(`WITH log AS (SELECT DATE_TRUNC('month', date - '1 WEEK'::INTERVAL) date, difference, cost FROM meter_log_full LEFT JOIN meters ON meters.id = meter ${sqlWhereId}), summary AS (SELECT date, SUM(difference)::INT sum, SUM(cost)::INT cost FROM log GROUP BY date) SELECT date, sum, sum - LAG(sum, 1) OVER win difference, cost, cost - LAG(cost, 1) OVER win cost_difference FROM summary ${sqlWhereMonths} WINDOW win AS (ORDER BY date) ORDER BY date DESC`, data)
       .then(response => response.rows).catch(errorHandler)
   },
 };

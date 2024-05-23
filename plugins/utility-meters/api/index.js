@@ -71,9 +71,9 @@ function makeEndpoints() {
     ctx.response = 200
   })
 
-  router.get("/meters/status", async ctx => ctx.body = await db.getCurrentMeterInfo() || [])
-  router.get("/meter/:id/status", async ctx => ctx.body = await db.getCurrentMeterInfo(ctx.params.id, false) || [])
-  router.get("/group/:id/status", async ctx => ctx.body = await db.getCurrentMeterInfo(ctx.params.id, true) || [])
+  router.get("/meters/status", async ctx => ctx.body = await db.getCurrentMeterInfo(undefined, false, ctx.query.months) || [])
+  router.get("/meter/:id/status", async ctx => ctx.body = await db.getCurrentMeterInfo(ctx.params.id, false, ctx.query.months) || [])
+  router.get("/group/:id/status", async ctx => ctx.body = await db.getCurrentMeterInfo(ctx.params.id, true, ctx.query.months) || [])
 
   router.get("/meters/graph", async ctx => ctx.body = await db.getMeterLogCostGraph(undefined, ctx.query.months) || [])
   router.get("/group/:id/graph", async ctx => ctx.body = await db.getMeterLogCostGraph(ctx.params.id, ctx.query.months) || [])
