@@ -1,0 +1,48 @@
+<h1>Managed meters</h1>
+
+<form id="editor" class="card line sticky">
+  <input id="inputId" type="hidden" name="id" required>
+
+  <label>
+    <b>Name / Comment</b>
+    <input id="inputName" type="text" placeholder="Example meter" name="name" required>
+  </label>
+
+  <label>
+    <b>Tariff</b>
+    <select id="inputTariff" name="tariff" required></select>
+  </label>
+
+  <button id="saveMeter" type="submit" disabled="true">Update meter</button>
+  <button id="addMeter" type="submit">Add new meter</button>
+</form>
+
+<div class="card">
+  <template id="row">
+    <tr>
+      <td id="id"></td>
+      <td id="comment"></td>
+      <td id="tariff"></td>
+      <td>
+        <button id="edit">Edit</button>
+      </td>
+      <td>
+        <button class="red" id="delete">Delete</button>
+      </td>
+    </tr>
+  </template>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th width="50%">Comment</th>
+        <th width="50%">Tariff</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="table">
+    </tbody>
+  </table>
+</div>

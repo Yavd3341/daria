@@ -53,6 +53,12 @@ async function buildCards(ctx) {
         editor: "utility-meters/settings/editor-database.html"
       }
     }
+    else if (ctx.url == SETTINGS_METERS_PAGE) {
+      page.scripts = ["/plugins/utility-meters/settings/loader-meters.js"]
+      page.templates = {
+        editor: "utility-meters/settings/editor-meters.html"
+      }
+    }
 
     return page
   }
@@ -301,5 +307,11 @@ module.exports = (ctx, config) => {
       gatherer: config.credentials.gatherer?.user,
       guest: config.credentials.guest?.user
     }
+  }])
+
+  uiManager.addDataProvider(SETTINGS_METERS_PAGE, async ctx => [{
+    type: "editor",
+    meters: await db.getMeters(),
+    tariffs: await db.getTariffs()
   }])
 }

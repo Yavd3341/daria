@@ -3,14 +3,6 @@ h2 {
   margin-top: 0;
 }
 
-#accountEdit {
-  height: min-content;
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  width: 300px;
-}
-
 .red {
   --col-shadow: var(--col-red);
   --col-accent: var(--col-red);
@@ -29,7 +21,7 @@ td:last-child {
   flex-wrap: wrap;
 }
 
-#table {
+div:has(table) {
   flex-grow: 1;
   height: min-content;
   min-width: min-content;
@@ -51,6 +43,11 @@ th:last-child {
   width: 1px;
 }
 
+th:first-child,
+td:first-child {
+  min-width: unset;
+}
+
 .label-like,
 label {
   display: block;
@@ -66,8 +63,16 @@ input[type="checkbox"] {
   accent-color: var(--col-accent);
 }
 
+.sticky {
+  height: min-content;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  width: 300px;
+}
+
 @media screen and (max-width: 600px) {
-  #accountEdit {
+  .sticky {
     position: unset;
     width: 100%;
     flex-grow: 1;

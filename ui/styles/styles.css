@@ -80,7 +80,8 @@ h1 {
 }
 
 input[type=text],
-input[type=password] {
+input[type=password],
+select {
   display: block;
   box-sizing: border-box;
 
@@ -101,7 +102,9 @@ input[type=password] {
 }
 
 input:active,
-input:hover {
+input:hover,
+select:active,
+select:hover {
   background-color: var(--col-accent-light);
   border-bottom-color: var(--col-accent);
 }
