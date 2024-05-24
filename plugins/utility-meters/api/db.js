@@ -199,6 +199,11 @@ module.exports = {
 
   // Extra requests
 
+  async getCurrentMeterState() {
+    return guest?.query("SELECT DISTINCT ON (meter) id, comment, date, value reading, tariff FROM meter_log LEFT JOIN meters ON id = meter ORDER BY meter, date DESC")
+      .then(response => response.rows).catch(errorHandler)
+  },
+
   async getCurrentMeterInfo(id, isGroupId = false, maxMonths = undefined) {
     let data = []
 

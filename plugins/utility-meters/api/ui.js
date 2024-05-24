@@ -311,7 +311,7 @@ module.exports = (ctx, config) => {
 
   uiManager.addDataProvider(SETTINGS_METERS_PAGE, async ctx => [{
     type: "editor",
-    meters: await db.getMeters(),
+    meters: await db.getCurrentMeterState(),
     tariffs: await db.getTariffs()
   }])
 }

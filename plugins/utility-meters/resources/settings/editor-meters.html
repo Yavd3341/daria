@@ -1,27 +1,44 @@
 <h1>Managed meters</h1>
 
-<form id="editor" class="card line sticky">
-  <input id="inputId" type="hidden" name="id" required>
+<div class="sticky gap">
+  <form id="meterEditor" class="card line">
+    <input id="inputId" type="hidden" name="id" required>
 
-  <label>
-    <b>Name / Comment</b>
-    <input id="inputName" type="text" placeholder="Example meter" name="name" required>
-  </label>
+    <label>
+      <b>Name / Comment</b>
+      <input id="inputName" type="text" placeholder="Example meter" name="name" required>
+    </label>
 
-  <label>
-    <b>Tariff</b>
-    <select id="inputTariff" name="tariff" required></select>
-  </label>
+    <label>
+      <b>Tariff</b>
+      <select id="inputTariff" name="tariff" required></select>
+    </label>
 
-  <button id="saveMeter" type="submit" disabled="true">Update meter</button>
-  <button id="addMeter" type="submit">Add new meter</button>
-</form>
+    <button id="saveMeter" type="submit" disabled="true">Update meter</button>
+    <button id="addMeter" type="submit">Add new meter</button>
+  </form>
+  
+  <form id="readingEditor" class="card line hidden">
+    <label>
+      <b>Reading</b>
+      <input id="inputReading" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Reading" name="reading" required>
+    </label>
+
+    <label>
+      <b>Date</b>
+      <input id="inputDate" type="date" name="date" required>
+    </label>
+
+    <button id="saveReading" type="submit" disabled="true">Update reading</button>
+  </form>
+</div>
 
 <div class="card">
   <template id="row">
     <tr>
       <td id="id"></td>
       <td id="comment"></td>
+      <td id="reading"></td>
       <td id="tariff"></td>
       <td>
         <button id="edit">Edit</button>
@@ -36,8 +53,9 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th width="50%">Comment</th>
-        <th width="50%">Tariff</th>
+        <th width="30%">Comment</th>
+        <th width="30%">Reading</th>
+        <th width="30%">Tariff</th>
         <th></th>
         <th></th>
       </tr>

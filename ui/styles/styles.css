@@ -81,6 +81,7 @@ h1 {
 
 input[type=text],
 input[type=password],
+input[type=date],
 select {
   display: block;
   box-sizing: border-box;

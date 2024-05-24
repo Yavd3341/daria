@@ -71,6 +71,14 @@ input[type="checkbox"] {
   width: 300px;
 }
 
+form + form {
+  margin-top: var(--content-spacing);
+}
+
+.hidden {
+  display: none;
+}
+
 @media screen and (max-width: 600px) {
   .sticky {
     position: unset;
