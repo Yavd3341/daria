@@ -59,6 +59,12 @@ async function buildCards(ctx) {
         editor: "utility-meters/settings/editor-meters.html"
       }
     }
+    else if (ctx.url == SETTINGS_TARIFFS_PAGE) {
+      page.scripts = ["/plugins/utility-meters/settings/loader-tariffs.js"]
+      page.templates = {
+        editor: "utility-meters/settings/editor-tariffs.html"
+      }
+    }
 
     return page
   }
@@ -314,4 +320,11 @@ module.exports = (ctx, config) => {
     meters: await db.getCurrentMeterState(),
     tariffs: await db.getTariffs()
   }])
+
+  uiManager.addDataProvider(SETTINGS_TARIFFS_PAGE, async ctx => [
+    { 
+      type: "editor",
+      tariffs: await db.getTariffsWithHistory()
+    }
+  ])
 }

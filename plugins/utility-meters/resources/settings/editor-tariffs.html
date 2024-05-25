@@ -1,0 +1,58 @@
+<h1>Managed tariffs</h1>
+  
+<template id="row">
+  <tr>
+    <td id="date"></td>
+    <td id="price"></td>
+    <td>
+      <button id="edit">Edit</button>
+    </td>
+  </tr>
+</template>
+
+<template id="tariff">
+  <div class="card full table">
+    <h1 id="heading"><span></span><button id="editTariff">Edit</button><button class="red" id="deleteTariff">Delete</button></h1>
+  
+    <table>
+      <thead>
+        <tr id="head-row">
+          <th width="50%">Date</th>
+          <th width="50%">Price</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="table"></tbody>
+    </table>
+  </div>
+</template>
+
+<div class="sticky gap">
+  <form id="tariffEditor" class="card line">
+    <input id="inputId" type="hidden" name="id" required>
+
+    <label>
+      <b>Name / Comment</b>
+      <input id="inputName" type="text" placeholder="Example tariff" name="name" required>
+    </label>
+
+    <button id="saveTariff" type="submit" disabled="true">Update tariff</button>
+    <button id="addTariff" type="submit">Add new tariff</button>
+  </form>
+  
+  <form id="priceEditor" class="card line hidden">
+    <label>
+      <b>Price</b>
+      <input id="inputPrice" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Price" name="price" required>
+    </label>
+
+    <label>
+      <b>Date</b>
+      <input id="inputDate" type="date" name="date" required>
+    </label>
+
+    <button id="savePrice" type="submit" disabled="true">Update price</button>
+  </form>
+</div>
+
+<div class="gap" id="tariffs"></div>
