@@ -7,6 +7,13 @@ const SETTINGS_METERS_PAGE = SETTINGS_PAGE + "/meters"
 const SETTINGS_TARIFFS_PAGE = SETTINGS_PAGE + "/tariffs"
 const SETTINGS_GROUPS_PAGE = SETTINGS_PAGE + "/groups"
 
+const SETTINGS_RESOURCES_MAP = {
+  [SETTINGS_PAGE]: "database",
+  [SETTINGS_METERS_PAGE]: "meters",
+  [SETTINGS_TARIFFS_PAGE]: "tariffs",
+  [SETTINGS_GROUPS_PAGE]: "groups"
+}
+
 async function buildCards(ctx) {
   if (ctx.url == MAIN_PAGE) {
     const page =  {
@@ -36,44 +43,19 @@ async function buildCards(ctx) {
 
     return page
   }
-  else if (ctx.url.startsWith(SETTINGS_PAGE)) {
-    const page =  {
+  else if (ctx.url.startsWith(SETTINGS_PAGE) && ctx.url in SETTINGS_RESOURCES_MAP)
+    return  {
       scripts: [
-        "/plugins/utility-meters/settings/loader.js"
+        `/plugins/utility-meters/settings/loaders/${SETTINGS_RESOURCES_MAP[ctx.url]}.js`
       ],
       styles: [
         "/plugins/utility-meters/main/styles.css",
         "/plugins/utility-meters/settings/styles.css"
-      ]
-    }
-
-    if (ctx.url == SETTINGS_PAGE) {
-      page.scripts = ["/plugins/utility-meters/settings/loader-database.js"]
-      page.templates = {
-        editor: "utility-meters/settings/editor-database.html"
+      ],
+      templates: {
+        editor: `utility-meters/settings/editors/${SETTINGS_RESOURCES_MAP[ctx.url]}.html`
       }
     }
-    else if (ctx.url == SETTINGS_METERS_PAGE) {
-      page.scripts = ["/plugins/utility-meters/settings/loader-meters.js"]
-      page.templates = {
-        editor: "utility-meters/settings/editor-meters.html"
-      }
-    }
-    else if (ctx.url == SETTINGS_TARIFFS_PAGE) {
-      page.scripts = ["/plugins/utility-meters/settings/loader-tariffs.js"]
-      page.templates = {
-        editor: "utility-meters/settings/editor-tariffs.html"
-      }
-    }
-    else if (ctx.url == SETTINGS_GROUPS_PAGE) {
-      page.scripts = ["/plugins/utility-meters/settings/loader-groups.js"]
-      page.templates = {
-        editor: "utility-meters/settings/editor-groups.html"
-      }
-    }
-
-    return page
-  }
 }
 
 async function buildSidebar(ctx) {
