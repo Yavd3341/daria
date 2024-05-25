@@ -1,0 +1,7 @@
+{
+  "id": "dtek",
+  "name": "DTEK plugin",
+  "author": "Yavd",
+  "version": "internal-dev",
+  "dependencies": [ "ui", "storage-mgr", "postgresql" ]
+}
