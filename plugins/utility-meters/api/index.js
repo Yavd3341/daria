@@ -44,7 +44,7 @@ function makeEndpoints() {
 
   router.get("/tariff/:id/values", async ctx => ctx.body = await db.getTariffHistory(ctx.params.id, ctx.query.months) || [])
   router.post("/tariff/:id/values", async ctx => {
-    await db.upsertTariffValue(ctx.params.id, ctx.json.reading, ctx.json.date)
+    await db.upsertTariffValue(ctx.params.id, ctx.json.price, ctx.json.date)
     ctx.status = 200
   })
   router.get("/tariff/:id/values/current", async ctx => ctx.body = await db.getCurrentTariff(ctx.params.id) || [])

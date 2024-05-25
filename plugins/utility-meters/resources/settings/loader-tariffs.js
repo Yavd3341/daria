@@ -25,6 +25,17 @@ daria.builders["editor"] = (fragment, ctx) => {
   const inputDate = fragment.getElementById("inputDate")
   const savePrice = fragment.getElementById("savePrice")
 
+  priceEditor.onsubmit = event => {
+    postAjax(`/api/utility-meters/tariff/${inputId.value}/values`, {
+      date: inputDate.valueAsDate,
+      price: Number(inputPrice.value.replace(/[,.]/, ''))
+    }, xhr => {
+      buildCards(false)
+    })
+
+    event.preventDefault()
+  }
+
   const templateRow = fragment.getElementById("row")
   const templateTariff = fragment.getElementById("tariff")
 
@@ -70,7 +81,7 @@ daria.builders["editor"] = (fragment, ctx) => {
         inputId.value = tariff.id
         inputName.value = tariff.comment
   
-        inputPrice.value = entry.price
+        inputPrice.value = entry.price / 100
         inputDate.valueAsDate  = entry.date ? new Date(entry.date) : undefined
   
         saveTariff.disabled = false
