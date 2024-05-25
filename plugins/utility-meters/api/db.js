@@ -84,28 +84,28 @@ module.exports = {
 
   async getMeters(id) {
     return (id != undefined
-      ? guest?.query("SELECT * FROM meters WHERE id = $1", [id])
-      : guest?.query("SELECT * FROM meters"))
-        .then(response => response.rows).catch(errorHandler)
+      ? guest?.getRows("SELECT * FROM meters WHERE id = $1", [id])
+      : guest?.getRows("SELECT * FROM meters"))
+        .catch(errorHandler)
   },
 
   async getTariffs(id) {
     return (id != undefined
-      ? guest?.query("SELECT * FROM tariffs WHERE id = $1", [id])
-      : guest?.query("SELECT * FROM tariffs"))
-        .then(response => response.rows).catch(errorHandler)
+      ? guest?.getRows("SELECT * FROM tariffs WHERE id = $1", [id])
+      : guest?.getRows("SELECT * FROM tariffs"))
+        .catch(errorHandler)
   },
 
   async getGroups(id) {
     return (id != undefined
-      ? guest?.query("SELECT * FROM groups WHERE id = $1", [id])
-      : guest?.query("SELECT * FROM groups"))
-        .then(response => response.rows).catch(errorHandler)
+      ? guest?.getRows("SELECT * FROM groups WHERE id = $1", [id])
+      : guest?.getRows("SELECT * FROM groups"))
+        .catch(errorHandler)
   },
 
   async getMetersInGroup(groupId) {
-    return guest?.query("SELECT meters.* FROM meters LEFT JOIN group_links ON group_links.meter_id = id WHERE group_id = $1", [groupId])
-      .then(response => response.rows).catch(errorHandler)
+    return guest?.getRows("SELECT meters.* FROM meters LEFT JOIN group_links ON group_links.meter_id = id WHERE group_id = $1", [groupId])
+      .catch(errorHandler)
   },
 
   // Edit info
@@ -144,7 +144,7 @@ module.exports = {
       .catch(errorHandler)
   },
   async deleteTariff(id) {
-      return admin.query('DELETE tariffs WHERE id = $1', [id])
+      return admin.query('DELETE FROM tariffs WHERE id = $1', [id])
   },
   
   async insertGroup(comment) {
@@ -156,7 +156,7 @@ module.exports = {
       .catch(errorHandler)
   },
   async deleteGroup(id) {
-      return admin.query('DELETE groups WHERE id = $1', [id])
+      return admin.query('DELETE FROM groups WHERE id = $1', [id])
   },
   
   async linkMeterToGroup(meterId, groupId) {
@@ -164,7 +164,7 @@ module.exports = {
       .catch(errorHandler)
   },
   async unlinkMeterFromGroup(meterId, groupId) {
-    return admin.query("DELETE group_links WHERE meter_id = $1 AND group_id = $2", [meterId, groupId])
+    return admin.query("DELETE FROM group_links WHERE meter_id = $1 AND group_id = $2", [meterId, groupId])
       .catch(errorHandler)
   },
 
@@ -172,27 +172,27 @@ module.exports = {
 
   async getMeterLog(id, maxMonths) {
     return (maxMonths
-      ? guest?.query("SELECT date, value FROM meter_log WHERE meter = $1 AND NOW() - date < $2", [id, maxMonths + " MONTHS"])
-      : guest?.query("SELECT date, value FROM meter_log WHERE meter = $1", [id]))
-        .then(response => response.rows).catch(errorHandler)
+      ? guest?.getRows("SELECT date, value FROM meter_log WHERE meter = $1 AND NOW() - date < $2", [id, maxMonths + " MONTHS"])
+      : guest?.getRows("SELECT date, value FROM meter_log WHERE meter = $1", [id]))
+        .catch(errorHandler)
   },
 
   async getTariffHistory(id, maxMonths) {
     return (maxMonths
-      ? guest?.query("SELECT date, value FROM tariff_history WHERE tariff = $1 AND NOW() - date < $2", [id, maxMonths + " MONTHS"])
-      : guest?.query("SELECT date, value FROM tariff_history WHERE tariff = $1", [id]))
-        .then(response => response.rows).catch(errorHandler)
+      ? guest?.getRows("SELECT date, value FROM tariff_history WHERE tariff = $1 AND NOW() - date < $2", [id, maxMonths + " MONTHS"])
+      : guest?.getRows("SELECT date, value FROM tariff_history WHERE tariff = $1", [id]))
+        .catch(errorHandler)
   },
 
   // Upsert historic data
 
   async upsertTariffValue(tariffId, value, date) {
-    return gatherer?.query("INSERT INTO tariff_history(tariff, value, date) VALUES ($1, $2, $3) ON CONFLICT DO UPDATE SET value = EXCLUDED.value",
+    return gatherer?.query("INSERT INTO tariff_history(tariff, value, date) VALUES ($1, $2, $3) ON CONFLICT (tariff, date) DO UPDATE SET value = EXCLUDED.value",
       [tariffId, value, date])
         .catch(errorHandler)
   },
   async upsertMeterReading(meterId, reading, date) {
-    return gatherer?.query("INSERT INTO meter_log(meter, value, date) VALUES ($1, $2, $3) ON CONFLICT DO UPDATE SET value = EXCLUDED.value",
+    return gatherer?.query("INSERT INTO meter_log(meter, value, date) VALUES ($1, $2, $3) ON CONFLICT (meter, date) DO UPDATE SET value = EXCLUDED.value",
       [meterId, reading, date])
         .catch(errorHandler)
   },
@@ -200,8 +200,8 @@ module.exports = {
   // Extra requests
 
   async getCurrentMeterState() {
-    return guest?.query("SELECT DISTINCT ON (meter) id, comment, date, value reading, tariff FROM meter_log LEFT JOIN meters ON id = meter ORDER BY meter, date DESC")
-      .then(response => response.rows).catch(errorHandler)
+    return guest?.getRows("WITH log AS (SELECT DISTINCT ON (meter) meter, date, value reading FROM meter_log ORDER BY meter, date DESC) SELECT id, comment, date, reading, tariff FROM meters LEFT JOIN log ON id = meter ORDER BY meter")
+      .catch(errorHandler)
   },
 
   async getCurrentMeterInfo(id, isGroupId = false, maxMonths = undefined) {
@@ -221,23 +221,28 @@ module.exports = {
       sqlWhereMonths = `WHERE NOW() - date < $${data.length}`
     }
     
-    return guest?.query(`WITH last AS (SELECT DISTINCT ON (meter) meter, date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full ${sqlWhereId} ORDER BY meter, date DESC) SELECT comment, last.* FROM last LEFT JOIN meters ON meter = id ${sqlWhereMonths}`, data)
-      .then(response => response.rows).catch(errorHandler)
+    return guest?.getRows(`WITH last AS (SELECT DISTINCT ON (meter) meter, date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full ${sqlWhereId} ORDER BY meter, date DESC) SELECT comment, last.* FROM last LEFT JOIN meters ON meter = id ${sqlWhereMonths}`, data)
+      .catch(errorHandler)
   },
 
   async getCurrentTariff(id) {
     const sqlWhereId = id ? "WHERE tariff = $1" : ""
-    return guest?.query(`WITH last_entry AS (SELECT DISTINCT (tariff) tariff, date, value FROM tariff_history ORDER BY date DESC) SELECT tariffs.*, date since, value FROM tariffs LEFT JOIN last_entry ON tariff = id ${sqlWhereId}`, id ? [id] : [])
-      .then(response => response.rows).catch(errorHandler)
+    return guest?.getRows(`WITH last_entry AS (SELECT DISTINCT (tariff) tariff, date, value FROM tariff_history ORDER BY date DESC) SELECT tariffs.*, date since, value FROM tariffs LEFT JOIN last_entry ON tariff = id ${sqlWhereId}`, id ? [id] : [])
+      .catch(errorHandler)
+  },
+
+  async getTariffsWithHistory() {
+    return guest?.getJson("WITH tmp AS (SELECT tariff, json_agg(json_build_object('date', date, 'price', value) ORDER BY date DESC) history FROM tariff_history GROUP BY tariff) SELECT json_agg(json_build_object('id', id, 'comment', comment, 'history', COALESCE(history, '[]'))) data FROM tariffs LEFT JOIN tmp ON id = tariff")
+      .catch(errorHandler)
   },
 
   async getMeterLogWithTariff(id, maxMonths) {
     const sqlWhereMonths = maxMonths 
       ? "AND NOW() - date < $2"
       : ""
-    return guest?.query(`SELECT date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full WHERE meter = $1 ${sqlWhereMonths} ORDER BY date DESC`,
+    return guest?.getRows(`SELECT date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full WHERE meter = $1 ${sqlWhereMonths} ORDER BY date DESC`,
       maxMonths ? [id, maxMonths + "MONTHS"] : [id])
-        .then(response => response.rows).catch(errorHandler)
+        .catch(errorHandler)
   },
 
   async getMeterLogCostGraph(groupId, maxMonths) {
@@ -255,7 +260,7 @@ module.exports = {
       sqlWhereMonths = `AND NOW() - date < $${data.length}`
     }
 
-    return guest?.query(`WITH log AS (SELECT DATE_TRUNC('month', date - '1 WEEK'::INTERVAL) date, difference, cost FROM meter_log_full LEFT JOIN meters ON meters.id = meter ${sqlWhereId}), summary AS (SELECT date, SUM(difference)::INT sum, SUM(cost)::INT cost FROM log GROUP BY date) SELECT date, sum, sum - LAG(sum, 1) OVER win difference, cost, cost - LAG(cost, 1) OVER win cost_difference FROM summary WHERE sum IS NOT NULL ${sqlWhereMonths} WINDOW win AS (ORDER BY date) ORDER BY date DESC`, data)
-      .then(response => response.rows).catch(errorHandler)
+    return guest?.getRows(`WITH log AS (SELECT DATE_TRUNC('month', date - '1 WEEK'::INTERVAL) date, difference, cost FROM meter_log_full LEFT JOIN meters ON meters.id = meter ${sqlWhereId}), summary AS (SELECT date, SUM(difference)::INT sum, SUM(cost)::INT cost FROM log GROUP BY date) SELECT date, sum, sum - LAG(sum, 1) OVER win difference, cost, cost - LAG(cost, 1) OVER win cost_difference FROM summary WHERE sum IS NOT NULL ${sqlWhereMonths} WINDOW win AS (ORDER BY date) ORDER BY date DESC`, data)
+      .catch(errorHandler)
   },
 }

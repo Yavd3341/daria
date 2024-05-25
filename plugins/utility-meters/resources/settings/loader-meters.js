@@ -4,6 +4,7 @@ daria.builders["editor"] = (fragment, ctx) => {
   const inputTariff = fragment.getElementById("inputTariff")
 
   const saveMeter = fragment.getElementById("saveMeter")
+  const saveReading = fragment.getElementById("saveReading")
   fragment.getElementById("meterEditor").onsubmit = event => {
     const meterPath = inputId.value && event.submitter == saveMeter
       ? "/" + inputId.value
@@ -26,7 +27,7 @@ daria.builders["editor"] = (fragment, ctx) => {
   readingEditor.onsubmit = event => {
     postAjax(`/api/utility-meters/meter/${inputId.value}/readings`, {
       reading: Number(inputReading.value),
-      tariff: inputDate.valueAsDate
+      date: inputDate.valueAsDate
     }, xhr => {
       buildCards(false)
     })
@@ -58,11 +59,7 @@ daria.builders["editor"] = (fragment, ctx) => {
     row.getElementById("id").innerText = meter.id
     row.getElementById("comment").innerText = meter.comment
     row.getElementById("reading").innerText = meter.reading
-
-    const tariffLink = document.createElement("a")
-    tariffLink.href = "/pages/utility-meters?tariff=" + meter.tariff
-    tariffLink.innerText = tariffs[meter.tariff].comment
-    row.getElementById("tariff").appendChild(tariffLink)
+    row.getElementById("tariff").innerText = `${tariffs[meter.tariff].comment} (# ${meter.tariff})`
 
     row.getElementById("edit").onclick = () => {
       inputId.value = meter.id
@@ -70,14 +67,15 @@ daria.builders["editor"] = (fragment, ctx) => {
       inputTariff.selectedIndex = tariffs[meter.tariff].index
 
       inputReading.value = meter.reading
-      inputDate.valueAsDate  = new Date(meter.date)
+      inputDate.valueAsDate  = meter.date ? new Date(meter.date) : undefined
 
       saveMeter.disabled = false
+      saveReading.disabled = false
       readingEditor.classList.remove("hidden")
     }
 
     row.getElementById("delete").onclick = () => {
-      if (confirm("Дійсно видалити цей запис?"))
+      if (confirm("Дійсно видалити цей лічильник?"))
         ajax("DELETE", "/api/utility-meters/meter/" + meter.id, undefined, xhr => {
           if (xhr.status == 200)
             buildCards(false)
