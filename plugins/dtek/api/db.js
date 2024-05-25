@@ -82,10 +82,10 @@ module.exports = {
 
   // Get historic data
 
-  async getMeterLog(id, maxMonths) {
+  async getMeterLog(account, zone, maxMonths) {
     return (maxMonths
-      ? user?.getRows("SELECT date, value FROM meter_log WHERE meter = $1 AND NOW() - date < $2", [id, maxMonths + " MONTHS"])
-      : user?.getRows("SELECT date, value FROM meter_log WHERE meter = $1", [id]))
+      ? user?.getRows("SELECT date, value FROM meter_log WHERE account = $1 AND zone = $2 NOW() - date < $3", [account, zone, maxMonths + " MONTHS"])
+      : user?.getRows("SELECT date, value FROM meter_log WHERE account = $1 AND zone = $2", [account, zone]))
         .catch(errorHandler)
   },
 
@@ -146,20 +146,18 @@ module.exports = {
 
   // Extra requests
 
-  async getCurrentMeterState() {
-    return user?.getRows("WITH log AS (SELECT DISTINCT ON (meter) meter, date, value reading FROM meter_log ORDER BY meter, date DESC) SELECT id, comment, date, reading, tariff FROM meters LEFT JOIN log ON id = meter ORDER BY meter")
-      .catch(errorHandler)
-  },
-
-  async getCurrentMeterInfo(id, isGroupId = false, maxMonths = undefined) {
+  async getCurrentMeterInfo(account, type, maxMonths = undefined) {
     let data = []
 
     let sqlWhereId = ""
-    if (id) {
-      data.push(id)
-      sqlWhereId = isGroupId
-        ? `WHERE meter IN (SELECT meter_id FROM group_links WHERE group_id = $${data.length})`
-        : `WHERE meter = $${data.length}`
+    if (account) {
+      data.push(account)
+      sqlWhereId = `WHERE full_id = $${data.length}`
+
+      if (type) {
+        data.push(type)
+        sqlWhereId = `AND zone = $${data.length}`
+      }
     }
 
     let sqlWhereMonths = ""
@@ -168,42 +166,31 @@ module.exports = {
       sqlWhereMonths = `WHERE NOW() - date < $${data.length}`
     }
     
-    return user?.getRows(`WITH last AS (SELECT DISTINCT ON (meter) meter, date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full ${sqlWhereId} ORDER BY meter, date DESC) SELECT comment, last.* FROM last LEFT JOIN meters ON meter = id ${sqlWhereMonths}`, data)
+    return user?.getRows(`WITH last AS (SELECT DISTINCT ON (account, zone) account, zone, month, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY account, zone ORDER BY month) cost_difference FROM meter_log_full ${sqlWhereId} ORDER BY account, zone, month DESC) SELECT address, last.* FROM last LEFT JOIN accounts ON account = id ${sqlWhereMonths}`, data)
       .catch(errorHandler)
   },
 
-  async getCurrentTariff(id) {
-    const sqlWhereId = id ? "WHERE tariff = $1" : ""
-    return user?.getRows(`WITH last_entry AS (SELECT DISTINCT (tariff) tariff, date, value FROM tariff_history ORDER BY date DESC) SELECT tariffs.*, date since, value FROM tariffs LEFT JOIN last_entry ON tariff = id ${sqlWhereId}`, id ? [id] : [])
+  async getCurrentTariff() {
+    return user?.getRows("SELECT * FROM tariff_history ORDER BY date DESC LIMIT 1")
       .catch(errorHandler)
   },
 
-  async getTariffsWithHistory() {
-    return user?.getJson("WITH tmp AS (SELECT tariff, json_agg(json_build_object('date', date, 'price', value) ORDER BY date DESC) history FROM tariff_history GROUP BY tariff) SELECT json_agg(json_build_object('id', id, 'comment', comment, 'history', COALESCE(history, '[]'))) data FROM tariffs LEFT JOIN tmp ON id = tariff")
-      .catch(errorHandler)
-  },
-
-  async getGroupsWithMeters() {
-    return user?.getJson("WITH tmp AS (SELECT group_id, json_agg(id ORDER BY id) meters FROM group_links LEFT JOIN meters ON meter_id = id GROUP BY group_id) SELECT json_agg(json_build_object('id', id, 'comment', comment, 'meters', COALESCE(meters, '[]'))) data FROM groups LEFT JOIN tmp ON id = group_id")
-      .catch(errorHandler)
-  },
-
-  async getMeterLogWithTariff(id, maxMonths) {
+  async getMeterLogWithTariff(account, type, maxMonths) {
     const sqlWhereMonths = maxMonths 
       ? "AND NOW() - date < $2"
       : ""
-    return user?.getRows(`SELECT date, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY meter ORDER BY date) cost_difference FROM meter_log_full WHERE meter = $1 ${sqlWhereMonths} ORDER BY date DESC`,
-      maxMonths ? [id, maxMonths + "MONTHS"] : [id])
+    return user?.getRows(`SELECT month, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY account, zone ORDER BY month) cost_difference FROM meter_log_full WHERE account = $1 AND zone = $2 ${sqlWhereMonths} ORDER BY month DESC`,
+      maxMonths ? [account, type, maxMonths + "MONTHS"] : [account, type])
         .catch(errorHandler)
   },
 
-  async getMeterLogCostGraph(groupId, maxMonths) {
+  async getMeterLogCostGraph(account, maxMonths) {
     let data = []
 
     let sqlWhereId = ""
-    if (groupId) {
-      data.push(groupId)
-      sqlWhereId = `WHERE meter IN (SELECT meter_id FROM group_links WHERE group_id = $${data.length})`
+    if (account) {
+      data.push(account)
+      sqlWhereId = `WHERE full_id = $${data.length}`
     }
 
     let sqlWhereMonths = ""
@@ -212,7 +199,7 @@ module.exports = {
       sqlWhereMonths = `AND NOW() - date < $${data.length}`
     }
 
-    return user?.getRows(`WITH log AS (SELECT DATE_TRUNC('month', date - '1 WEEK'::INTERVAL) date, difference, cost FROM meter_log_full LEFT JOIN meters ON meters.id = meter ${sqlWhereId}), summary AS (SELECT date, SUM(difference)::INT sum, SUM(cost)::INT cost FROM log GROUP BY date) SELECT date, sum, sum - LAG(sum, 1) OVER win difference, cost, cost - LAG(cost, 1) OVER win cost_difference FROM summary WHERE sum IS NOT NULL ${sqlWhereMonths} WINDOW win AS (ORDER BY date) ORDER BY date DESC`, data)
+    return user?.getRows(`WITH summary AS (SELECT account, month, SUM(difference)::INT sum, SUM(cost)::INT cost FROM meter_log_full ${sqlWhereId} GROUP BY account, month) SELECT account, month, sum, sum - LAG(sum, 1) OVER win difference, cost, cost - LAG(cost, 1) OVER win cost_difference FROM summary WHERE sum IS NOT NULL ${sqlWhereMonths} WINDOW win AS (PARTITION BY account ORDER BY month) ORDER BY account, month DESC`, data)
       .catch(errorHandler)
   },
 }
