@@ -236,6 +236,11 @@ module.exports = {
       .catch(errorHandler)
   },
 
+  async getGroupsWithMeters() {
+    return guest?.getJson("WITH tmp AS (SELECT group_id, json_agg(id ORDER BY id) meters FROM group_links LEFT JOIN meters ON meter_id = id GROUP BY group_id) SELECT json_agg(json_build_object('id', id, 'comment', comment, 'meters', COALESCE(meters, '[]'))) data FROM groups LEFT JOIN tmp ON id = group_id")
+      .catch(errorHandler)
+  },
+
   async getMeterLogWithTariff(id, maxMonths) {
     const sqlWhereMonths = maxMonths 
       ? "AND NOW() - date < $2"

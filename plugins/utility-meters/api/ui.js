@@ -65,6 +65,12 @@ async function buildCards(ctx) {
         editor: "utility-meters/settings/editor-tariffs.html"
       }
     }
+    else if (ctx.url == SETTINGS_GROUPS_PAGE) {
+      page.scripts = ["/plugins/utility-meters/settings/loader-groups.js"]
+      page.templates = {
+        editor: "utility-meters/settings/editor-groups.html"
+      }
+    }
 
     return page
   }
@@ -321,10 +327,14 @@ module.exports = (ctx, config) => {
     tariffs: await db.getTariffs()
   }])
 
-  uiManager.addDataProvider(SETTINGS_TARIFFS_PAGE, async ctx => [
-    { 
-      type: "editor",
-      tariffs: await db.getTariffsWithHistory()
-    }
-  ])
+  uiManager.addDataProvider(SETTINGS_TARIFFS_PAGE, async ctx => [{ 
+    type: "editor",
+    tariffs: await db.getTariffsWithHistory()
+  }])
+
+  uiManager.addDataProvider(SETTINGS_GROUPS_PAGE, async ctx => [{ 
+    type: "editor",
+    meters: await db.getMeters(),
+    groups: await db.getGroupsWithMeters()
+  }])
 }

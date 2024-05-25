@@ -35,7 +35,7 @@ div:has(table) {
   margin-left: auto;
 }
 
-.table button {
+.table h1 button {
   margin-left: var(--content-spacing);
   box-sizing: border-box;
   display: inline-block;
@@ -45,7 +45,7 @@ div:has(table) {
   cursor: pointer;
 }
 
-.table button + button {
+.table h1 button + button {
   margin-top: unset;
 }
 
@@ -68,6 +68,7 @@ th:last-child {
 th:first-child,
 td:first-child {
   min-width: unset;
+  text-align: center;
 }
 
 .label-like,

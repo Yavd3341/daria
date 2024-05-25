@@ -1,0 +1,51 @@
+<h1>Managed groups</h1>
+  
+<template id="row">
+  <tr>
+    <td id="id"></td>
+    <td id="comment" width="100%"></td>
+    <td>
+      <button class="red" id="remove">Remove</button>
+    </td>
+  </tr>
+</template>
+
+<template id="group">
+  <div class="card full table">
+    <h1 id="heading"><span></span><button id="editGroup">Edit</button><button class="red" id="deleteGroup">Delete</button></h1>
+  
+    <table>
+      <thead>
+        <tr id="head-row">
+          <th colspan="3">Meters</th>
+        </tr>
+      </thead>
+      <tbody id="table"></tbody>
+    </table>
+  </div>
+</template>
+
+<div class="sticky gap">
+  <form id="groupEditor" class="card line">
+    <input id="inputId" type="hidden" name="id" required>
+
+    <label>
+      <b>Name / Comment</b>
+      <input id="inputName" type="text" placeholder="Example group" name="name" required>
+    </label>
+
+    <button id="saveGroup" type="submit" disabled="true">Update group</button>
+    <button id="addGroup" type="submit">Add new group</button>
+  </form>
+  
+  <form id="meterEditor" class="card line hidden">
+    <label>
+      <b>Meter</b>
+      <select id="inputMeter" name="meter" required></select>
+    </label>
+
+    <button id="addMeter" type="submit" disabled="true">Add meter</button>
+  </form>
+</div>
+
+<div class="gap" id="groups"></div>
