@@ -8,9 +8,6 @@ function makeEndpoints() {
 
   router.prefix("/utility-meters")
 
-  router.safeGet = (path, data) => router.get(path, async ctx => ctx.body = await data(ctx) || [])
-  router.safeGet = (path, data) => router.get(path, async ctx => ctx.body = await data(ctx) || [])
-
   router.get("/meters", async ctx => ctx.body = await db.getMeters() || [])
   router.post("/meters", async ctx => ctx.body = await db.insertMeter(ctx.json.comment, ctx.json.tariff) || [])
   router.get("/meter/:id", async ctx => ctx.body = await db.getMeters(ctx.params.id) || [])

@@ -49,14 +49,14 @@ async function buildSidebar(ctx) {
     items: []
   }
 
-  if (ctx.url != MAIN_PAGE || ctx.query.account != undefined)
+  if (ctx.url == "/" || (ctx.url == MAIN_PAGE && ctx.query.account != undefined) || ctx.url.startsWith(SETTINGS_PAGE))
     part.items.push({
       name: "Main page",
       url: MAIN_PAGE
     })
 
   const isSettingsTree = ctx.url.startsWith(SETTINGS_TREE) 
-  if (ctx.url != SETTINGS_PAGE)
+  if (isSettingsTree && ctx.url != SETTINGS_PAGE || ctx.url.startsWith(MAIN_PAGE))
     part.items.push({
       name: isSettingsTree ? "General" : "Settings",
       url: SETTINGS_PAGE
@@ -87,14 +87,11 @@ async function buildSidebarAccounts(ctx) {
   if (!(accounts?.length > 0))
     return
 
-  const accountId = ctx.query.type == undefined 
-    ? Number(ctx.query.account)
-    : undefined
-
+  const accountId = Number(ctx.query.account)
   return part = {
     name: "Accounts",
     items: accounts.reduce((items, account) => {
-      if (account.account != accountId)
+      if (account.id != accountId)
         items.push({
           name: account.address,
           url: MAIN_PAGE + "?account=" + account.id

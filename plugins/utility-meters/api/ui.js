@@ -64,14 +64,14 @@ async function buildSidebar(ctx) {
     items: []
   }
 
-  if (ctx.url != MAIN_PAGE || ctx.query.group || ctx.query.meter || ctx.query.tariff)
+  if (ctx.url == "/" || (ctx.url == MAIN_PAGE && (ctx.query.group || ctx.query.meter || ctx.query.tariff)) || ctx.url.startsWith(SETTINGS_PAGE))
     part.items.push({
       name: "Main page",
       url: MAIN_PAGE
     })
 
   const isSettingsTree = ctx.url.startsWith(SETTINGS_TREE) 
-  if (ctx.url != SETTINGS_PAGE)
+  if (isSettingsTree && ctx.url != SETTINGS_PAGE || ctx.url.startsWith(MAIN_PAGE))
     part.items.push({
       name: isSettingsTree ? "General" : "Settings",
       url: SETTINGS_PAGE

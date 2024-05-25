@@ -120,8 +120,8 @@ module.exports = {
 
   async getAccounts(id) {
     return (id
-      ? user?.getRows("SELECT id, full_id account, address FROM accounts")
-      : user?.getRows("SELECT full_id account, address FROM accounts WHERE id = $1", [id])
+      ? user?.getRows("SELECT full_id account, address FROM accounts WHERE id = $1", [id])
+      : user?.getRows("SELECT id, full_id account, address FROM accounts")
     ).catch(errorHandler)
   },
 
