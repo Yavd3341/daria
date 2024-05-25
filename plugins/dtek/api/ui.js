@@ -49,7 +49,7 @@ async function buildSidebar(ctx) {
     items: []
   }
 
-  if (ctx.url != MAIN_PAGE)
+  if (ctx.url != MAIN_PAGE || ctx.query.account != undefined)
     part.items.push({
       name: "Main page",
       url: MAIN_PAGE
@@ -78,23 +78,26 @@ async function buildSidebar(ctx) {
   return part
 }
 
-async function buildSidebarGroups(ctx) {
+async function buildSidebarAccounts(ctx) {
   if (!ctx.url.startsWith(MAIN_PAGE))
     return
 
-  const groups = await db.getGroups() // getAccounts()
+  const accounts = await db.getAccounts()
 
-  if (!(groups?.length > 0))
+  if (!(accounts?.length > 0))
     return
 
-  const groupId = Number(ctx.query.group)
+  const accountId = ctx.query.type == undefined 
+    ? Number(ctx.query.account)
+    : undefined
+
   return part = {
-    name: "Meter groups",
-    items: groups.reduce((items, group) => {
-      if (group.id != groupId)
+    name: "Accounts",
+    items: accounts.reduce((items, account) => {
+      if (account.account != accountId)
         items.push({
-          name: group.comment,
-          url: MAIN_PAGE + "?group=" + group.id
+          name: account.address,
+          url: MAIN_PAGE + "?account=" + account.account
         })
       return items
     }, [])
@@ -106,7 +109,7 @@ module.exports = (ctx, config) => {
 
   uiManager.addCardsBuilder(buildCards)
   uiManager.addSidebarBuilder(buildSidebar)
-  uiManager.addSidebarBuilder(buildSidebarGroups)
+  uiManager.addSidebarBuilder(buildSidebarAccounts)
 
   uiManager.addDataProvider(MAIN_PAGE, async ctx => {
     if (ctx.query.meter) {
