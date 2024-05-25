@@ -118,8 +118,15 @@ module.exports = {
       ).catch(errorHandler)
   },
 
-  async getAccounts() {
-    return user?.getRows("SELECT full_id account, address FROM accounts")
+  async getAccounts(id) {
+    return (id
+      ? user?.getRows("SELECT id, full_id account, address FROM accounts")
+      : user?.getRows("SELECT full_id account, address FROM accounts WHERE id = $1", [id])
+    ).catch(errorHandler)
+  },
+
+  async getZone(id) {
+    return user?.getRows("SELECT name, coefficient FROM zones WHERE id = $1", [id])
       .catch(errorHandler)
   },
 
@@ -152,7 +159,7 @@ module.exports = {
     let sqlWhereId = ""
     if (account) {
       data.push(account)
-      sqlWhereId = `WHERE full_id = $${data.length}`
+      sqlWhereId = `WHERE account = $${data.length}`
 
       if (type) {
         data.push(type)
@@ -163,10 +170,10 @@ module.exports = {
     let sqlWhereMonths = ""
     if (maxMonths) {
       data.push(maxMonths + " MONTHS")
-      sqlWhereMonths = `WHERE NOW() - date < $${data.length}`
+      sqlWhereMonths = `WHERE DATE_TRUNC('MONTH', NOW()) - month <= $${data.length}`
     }
     
-    return user?.getRows(`WITH last AS (SELECT DISTINCT ON (account, zone) account, zone, month, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY account, zone ORDER BY month) cost_difference FROM meter_log_full ${sqlWhereId} ORDER BY account, zone, month DESC) SELECT address, last.* FROM last LEFT JOIN accounts ON account = id ${sqlWhereMonths}`, data)
+    return user?.getRows(`WITH last AS (SELECT DISTINCT ON (account, zone) account, zone, month, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY account, zone ORDER BY month) cost_difference FROM meter_log_full ${sqlWhereId} ORDER BY account, zone, month DESC) SELECT address, name zone_name, last.* FROM last LEFT JOIN accounts ON account = accounts.id LEFT JOIN zones ON zone = zones.id ${sqlWhereMonths}`, data)
       .catch(errorHandler)
   },
 
@@ -177,7 +184,7 @@ module.exports = {
 
   async getMeterLogWithTariff(account, type, maxMonths) {
     const sqlWhereMonths = maxMonths 
-      ? "AND NOW() - date < $2"
+      ? "AND NOW() - month < $3"
       : ""
     return user?.getRows(`SELECT month, reading, difference, tariff, cost, cost - LAG(cost, 1) OVER (PARTITION BY account, zone ORDER BY month) cost_difference FROM meter_log_full WHERE account = $1 AND zone = $2 ${sqlWhereMonths} ORDER BY month DESC`,
       maxMonths ? [account, type, maxMonths + "MONTHS"] : [account, type])
@@ -190,16 +197,18 @@ module.exports = {
     let sqlWhereId = ""
     if (account) {
       data.push(account)
-      sqlWhereId = `WHERE full_id = $${data.length}`
+      sqlWhereId = `WHERE account = $${data.length}`
     }
 
     let sqlWhereMonths = ""
     if (maxMonths) {
       data.push(maxMonths + " MONTHS")
-      sqlWhereMonths = `AND NOW() - date < $${data.length}`
+      sqlWhereMonths = `AND NOW() - month < $${data.length}`
     }
 
-    return user?.getRows(`WITH summary AS (SELECT account, month, SUM(difference)::INT sum, SUM(cost)::INT cost FROM meter_log_full ${sqlWhereId} GROUP BY account, month) SELECT account, month, sum, sum - LAG(sum, 1) OVER win difference, cost, cost - LAG(cost, 1) OVER win cost_difference FROM summary WHERE sum IS NOT NULL ${sqlWhereMonths} WINDOW win AS (PARTITION BY account ORDER BY month) ORDER BY account, month DESC`, data)
+    const accountComma = account ? "account," : ""
+
+    return user?.getRows(`WITH summary AS (SELECT ${accountComma}month, SUM(difference)::INT sum, SUM(cost)::INT cost FROM meter_log_full ${sqlWhereId} GROUP BY ${accountComma} month) SELECT ${accountComma} month, sum, sum - LAG(sum, 1) OVER win difference, cost, cost - LAG(cost, 1) OVER win cost_difference FROM summary WHERE sum IS NOT NULL ${sqlWhereMonths} WINDOW win AS (${account ? "PARTITION BY account" : ""} ORDER BY month) ORDER BY ${accountComma} month DESC`, data)
       .catch(errorHandler)
   },
 }
