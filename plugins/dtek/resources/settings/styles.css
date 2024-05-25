@@ -1,0 +1,124 @@
+h2 {
+  width: 100%;
+  margin-top: 0;
+}
+
+.red {
+  --col-shadow: var(--col-red);
+  --col-accent: var(--col-red);
+  --col-accent-dark: var(--col-red-dark);
+}
+
+#loginEdit label:has(input[type="checkbox"]) {
+  margin-bottom: 1.5em;
+  display: flex;
+}
+
+#loginEdit input[type="checkbox"] {
+  margin-left: auto;
+}
+
+.line,
+td:last-child {
+  display: flex;
+  gap: 0 calc(var(--content-spacing) / 2);
+  align-items: baseline;
+}
+
+.line {
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+div:has(table) {
+  flex-grow: 1;
+  height: min-content;
+  min-width: min-content;
+}
+
+.table h1 {
+  display: flex;
+}
+
+.table button:first-of-type {
+  margin-left: auto;
+}
+
+.table h1 button {
+  margin-left: var(--content-spacing);
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 0.5em 0.75em;
+  font-size: initial;
+  width: auto;
+  cursor: pointer;
+}
+
+.table h1 button + button {
+  margin-top: unset;
+}
+
+table button {
+  padding: 0.35em 0.45em;
+  width: auto;
+  display: initial;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.session {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+th:last-child {
+  width: 1px;
+}
+
+th:first-child,
+td:first-child {
+  min-width: unset;
+  text-align: center;
+}
+
+.label-like,
+label {
+  display: block;
+  margin-bottom: 0.5em;
+  flex-grow: 1;
+}
+
+#delete {
+  margin-left: auto;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--col-accent);
+}
+
+.sticky {
+  height: min-content;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  width: 300px;
+}
+
+.gap .card + .card {
+  margin-top: var(--content-spacing);
+}
+
+.hidden {
+  display: none;
+}
+
+.gap:has(div.card) {
+  width: 0;
+}
+
+@media screen and (max-width: 600px) {
+  .sticky {
+    position: unset;
+    width: 100%;
+    flex-grow: 1;
+  }
+}

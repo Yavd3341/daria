@@ -1,0 +1,121 @@
+<form id="settingsForm" class="card">
+  <h1>DTEK settings</h1>
+
+  <div class="line">
+    <div>
+      <h2>Database</h2>
+
+      <div class="line">
+        <label>
+          <b>Host</b>
+          <input id="host" type="text" placeholder="Use default host" name="host">
+        </label>
+
+        <label>
+          <b>Port</b>
+          <input id="port" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Use default port" name="port">
+        </label>
+
+        <label>
+          <b>Database</b>
+          <input id="database" type="text" placeholder="Enter database" name="database" required>
+        </label>
+      </div>
+
+      <div id="loginUser" class="line">
+        <label>
+          <b>Login user username</b>
+          <input type="text" placeholder="Enter username" name="username" required>
+        </label>
+
+        <label>
+          <b>Login user password</b>
+          <input type="password" placeholder="Enter new password" name="password">
+        </label>
+      </div>
+
+      <div id="gathererUser" class="line">
+        <label>
+          <b>Gatherer username</b>
+          <input type="text" placeholder="Enter username" name="username" required>
+        </label>
+
+        <label>
+          <b>Gatherer password</b>
+          <input type="password" placeholder="Enter new password" name="password">
+        </label>
+      </div>
+
+      <div id="userUser" class="line">
+        <label>
+          <b>Normal user username</b>
+          <input type="text" placeholder="Enter username" name="username" required>
+        </label>
+
+        <label>
+          <b>Normal user password</b>
+          <input type="password" placeholder="Enter new password" name="password">
+        </label>
+      </div>
+    </div>
+
+    <div>
+      <h2>Miscellaneous</h2>
+
+      <b class="label-like">Update timer</b>
+      <div class="line">
+        <label>
+          <input id="useInternalTimer" type="checkbox" name="useInternalTimer">
+          Use internal update timer (requires restart)
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <button id="submit" type="submit">Save</button>
+</form>
+
+<h1>Managed logins</h1>
+
+<form id="loginEdit" class="card line sticky">
+  <label>
+    <b>Phone / account</b>
+    <input id="login" type="text" inputmode="numeric" pattern="[0-9]{9,}" placeholder="Enter phone / account" name="login" required>
+  </label>
+
+  <label>
+    <b>Password</b>
+    <input id="pass" type="password" placeholder="Enter password" name="pass" required>
+  </label>
+
+  <label>
+    <b>Is personal account?</b>
+    <input id="personal" type="checkbox" name="personal" required>
+  </label>
+
+  <button id="saveCreds" type="submit">Update credentials</button>
+</form>
+
+<div class="card" id="table">
+  <template id="row">
+    <tr>
+      <td id="loginCell"></td>
+      <td id="personalCell"></td>
+      <td>
+        <button class="red" id="delete">Delete</button>
+      </td>
+    </tr>
+  </template>
+
+  <table>
+    <thead>
+      <tr>
+        <th width="50%">Phone / account</th>
+        <th width="50%">Is personal</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="logins">
+    </tbody>
+  </table>
+</div>
