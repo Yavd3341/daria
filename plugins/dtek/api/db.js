@@ -125,11 +125,6 @@ module.exports = {
     ).catch(errorHandler)
   },
 
-  async getZone(id) {
-    return user?.getRows("SELECT name, coefficient FROM zones WHERE id = $1", [id])
-      .catch(errorHandler)
-  },
-
   async deleteAccount(account) {
     return loginUser?.query("DELETE FROM accounts WHERE full_id = $1", [account]).catch(errorHandler)
   },
@@ -138,6 +133,11 @@ module.exports = {
     return gatherer?.query("SELECT upsert_account($1, $2) id",
       [account, address])
         .then(result => result.rows[0].id).catch(errorHandler)
+  },
+
+  async getZone(id) {
+    return user?.getRows("SELECT name, coefficient FROM zones WHERE id = $1", [id])
+      .catch(errorHandler)
   },
 
   async upsertTariffValue(value, date) {
