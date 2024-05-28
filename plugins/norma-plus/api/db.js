@@ -182,7 +182,7 @@ module.exports = {
   async getRecords(account, days) {
     const sqlDays = days ? " AND NOW() - date < $2" : "";
     return user?.getRows(
-      `WITH records AS (SELECT account, date, comment, -amount amount FROM spendings WHERE account = $1${sqlDays} UNION SELECT account, date, comment, amount FROM payments WHERE account = $1${sqlDays}) SELECT * FROM records ORDER BY date DESC, amount`,
+      `WITH records AS (SELECT date, comment, -amount amount FROM spendings WHERE account = $1${sqlDays} UNION SELECT date, comment, amount FROM payments WHERE account = $1${sqlDays}) SELECT * FROM records ORDER BY date DESC, amount`,
       [account, days + " days"]).catch(errorHandler);
   }
 };

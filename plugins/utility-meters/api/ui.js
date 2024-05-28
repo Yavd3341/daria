@@ -21,24 +21,17 @@ async function buildCards(ctx) {
         "https://cdn.jsdelivr.net/npm/chart.js",
         "https://cdn.jsdelivr.net/npm/luxon",
         "https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon",
-        "/plugins/utility-meters/main/loader-common.js"
+        "/plugins/utility-meters/main/loader-common.js",
+        "/plugins/utility-meters/main/loader-meters.js"
       ],
       styles: [
         "/plugins/utility-meters/main/styles.css"
       ],
       templates: {
         "heading": "utility-meters/main/heading.html",
-        "graph": "utility-meters/main/graph.html"
+        "graph": "utility-meters/main/graph.html",
+        "table": "utility-meters/main/table-meters.html"
       }
-    }
-
-    if (ctx.query.tariff) {
-      page.scripts.push("/plugins/utility-meters/main/loader-tariffs.js")
-      page.templates["table"] = "utility-meters/main/table-common.html"
-    }
-    else {
-      page.scripts.push("/plugins/utility-meters/main/loader-meters.js")
-      page.templates["table"] = "utility-meters/main/table-meters.html"
     }
 
     return page
@@ -227,40 +220,6 @@ module.exports = (ctx, config) => {
             data: data
           }
         ]
-      }
-    }
-    else if (ctx.query.tariff) {
-      const tariffId = Number(ctx.query.tariff)
-      const tariff = await db.getTariffs(tariffId)
-
-      if (tariff && tariff.length > 0) {
-        const data = await db.getTariffHistory(tariffId)
-        const page = [
-          {
-            type: "heading",
-            title: `tariff "${tariff[0].comment}"`
-          },
-          {
-            type: "table",
-            data: data
-          }
-        ]
-
-        if (data && data.length > 1) {
-          page.splice(2, 0, {
-            type: "graph",
-            data: await db.getMeterLogCostGraph(tariffId, 12),
-            fields: [
-              {
-                name: "Price",
-                field: "value",
-                type: "money"
-              }
-            ]
-          })
-        }
-
-        return page
       }
     }
     else {

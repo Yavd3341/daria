@@ -140,9 +140,9 @@ module.exports = {
         .then(result => result.rows[0].id).catch(errorHandler)
   },
 
-  async upsertTariffValue(tariffId, value, date) {
-    return gatherer?.query("INSERT INTO tariff_history(tariff, value, date) VALUES ($1, $2, $3) ON CONFLICT (tariff, date) DO UPDATE SET value = EXCLUDED.value",
-      [tariffId, value, date])
+  async upsertTariffValue(value, date) {
+    return gatherer?.query("INSERT INTO tariff_history(value, date) VALUES ($2, $3) ON CONFLICT (date) DO UPDATE SET value = EXCLUDED.value",
+      [value, date])
         .catch(errorHandler)
   },
   async insertMeterReading(account, zone, reading, date) {
