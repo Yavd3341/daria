@@ -3,6 +3,5 @@
   "name": "Daria UI",
   "author": "Yavd",
   "version": "internal-dev",
-  "coverage": "ui",
-  "dependencies": [ "storage-mgr" ]
+  "coverage": "ui"
 }

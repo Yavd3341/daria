@@ -39,9 +39,7 @@ async function build(ctx) {
 }
 
 module.exports = {
-  init(router, storage) {
-    this.addDataProvider("/", () => storage.dashboard);
-
+  init(router) {
     router.post("/cards", async ctx => {
       ctx.json.cookies = ctx.cookies;
       let data = ctx.json.url in providers ? await providers[ctx.json.url](ctx.json) : [];
